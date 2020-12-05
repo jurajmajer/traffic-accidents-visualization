@@ -1,0 +1,9 @@
+flask==1.1.2
+python-dotenv==0.15.0
+folium==0.11.0
+mysql-connector-python==8.0.22
+pandas==1.1.4
+matplotlib==3.2
+seaborn==0.11.0
+flask-sqlalchemy==2.4.4
+mysqlclient==2.0.1
