@@ -13,9 +13,11 @@ from flask import Markup
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', plot1=Markup(plots.get_plot_total_accidents_by_days()), plot2=Markup(plots.get_plot_avg_accidents_by_weekdays()),
-	plot3=Markup(plots.get_plot_total_accidents_by_county()), plot4=Markup(plots.get_plot_total_accidents_by_district()), 
-    plot5=Markup(plots.get_plot_accident_by_time_in_day()))
+    start_datetime = plots.get_start_datetime(None)
+    end_datetime = plots.get_end_datetime(None)
+    return render_template('index.html', plot1=Markup(plots.get_plot_total_accidents_by_days(start_datetime, end_datetime)), plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime)),
+	plot3=Markup(plots.get_plot_total_accidents_by_county(start_datetime, end_datetime)), plot4=Markup(plots.get_plot_total_accidents_by_district(start_datetime, end_datetime)), 
+    plot5=Markup(plots.get_plot_accident_by_time_in_day(start_datetime, end_datetime)))
 
 @app.route('/trends')    
 def accidents_trends():

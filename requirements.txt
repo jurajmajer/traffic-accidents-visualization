@@ -8,3 +8,4 @@ seaborn==0.11.0
 flask-sqlalchemy==2.4.4
 mysqlclient==2.0.1
 plotly==4.13.0
+flask-caching==1.9.0
