@@ -29,7 +29,7 @@ def get_end_datetime(end_datetime):
         return end_datetime
     return get_now_datetime()
 
-def get_plot_total_accidents_by_days(start_datetime=None, end_datetime=None):
+def get_plot_total_accidents_by_days(start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))['overallStartTime']
     data = data.map(lambda p: p.date()).value_counts().sort_index()
@@ -49,10 +49,9 @@ def get_plot_total_accidents_by_days(start_datetime=None, end_datetime=None):
     )
     
     u.perf_lap()
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
 
-def get_plot_avg_accidents_by_weekdays(start_datetime=None, end_datetime=None):
+def get_plot_avg_accidents_by_weekdays(start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))['overallStartTime']
     data = data.map(lambda p: p.date())
@@ -72,16 +71,15 @@ def get_plot_avg_accidents_by_weekdays(start_datetime=None, end_datetime=None):
             title_text = 'Priemerný počet nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None):
+def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))['countyId']
     county_names = d.get_county()
     data = data.value_counts()
     data.index = data.index.map(lambda p: county_names.loc[p]['name'])
-    data = data.value_counts().sort_values()
+    data = data.sort_values()
     df = pd.DataFrame(dict(county=data.index, count=data.values))
     u.perf_lap()
     
@@ -97,10 +95,9 @@ def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None):
             title_text = 'Absolútny počet nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None):
+def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))['districtId']
     district_names = d.get_district()
@@ -124,10 +121,9 @@ def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None)
             title_text = 'Absolútny počet nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
 
-def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_datetime=None):
+def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))
     data = data.loc[data.countyId == county_id]['overallStartTime']
@@ -149,10 +145,9 @@ def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_dateti
             title_text = 'Počet nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
     
-def get_plot_accident_trend_in_district(district_id, start_datetime=None, end_datetime=None):
+def get_plot_accident_trend_in_district(district_id, start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))
     data = data.loc[data.districtId == district_id]['overallStartTime']
@@ -174,10 +169,9 @@ def get_plot_accident_trend_in_district(district_id, start_datetime=None, end_da
             title_text = 'Počet nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
 
-def get_plot_accident_by_time_in_day(start_datetime=None, end_datetime=None):
+def get_plot_accident_by_time_in_day(start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     data = d.get_traffic_accident_by_date(get_start_datetime(start_datetime), get_end_datetime(end_datetime))['overallStartTime']
     total_count = data.size
@@ -197,8 +191,7 @@ def get_plot_accident_by_time_in_day(start_datetime=None, end_datetime=None):
             title_text = 'Percento nehôd'
         )
     )
-    return encode_plot(fig)
-    #fig.show(renderer="browser")
+    return encode_plot(fig, output)
     
 def get_date_xtickslabels(index, date_format='%d.%m.'):
     return [x.strftime(date_format) + ' (' + get_short_week_day_name(x.weekday()) + ')' for x in index]
@@ -236,11 +229,14 @@ def get_long_week_day_name(weekDayCode):
 def get_short_week_day_name(weekDayCode):
     return get_long_week_day_name(weekDayCode)[0:3]
  
-def encode_plot(fig):
-    return fig.to_html(include_plotlyjs=False, full_html=False)
-    #return fig.to_json()
+def encode_plot(fig, output=None):
+    if output == 'html':
+        return fig.to_html(include_plotlyjs=False, full_html=False)
+    if output == 'json':
+        return fig.to_json()
+    fig.show(renderer="browser")
     
-#print(get_plot_total_accidents_by_days())
+get_plot_total_accidents_by_county(output=None)
 #get_plot_total_accidents_by_weekdays()
 #get_plot_total_accidents_by_days()
 #print(get_start_date(None))
