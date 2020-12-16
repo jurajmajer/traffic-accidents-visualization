@@ -4,30 +4,50 @@
 		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     	<script>
-    	
-    	$(document).ready(function(){
-            req = $.ajax({
-                url : "/api/figure/total_accidents_by_days",
-                type : "GET"
+        
+            $(document).ready(function(){
+                $("#form1").submit(function(event) {
+                      refreshAll()
+                      event.preventDefault();
+                });
             });
-    
-            req.done(function(data) {
-                $("#image").fadeOut(100).fadeIn(300);
-                Plotly.newPlot('image', data, {});     
-            });
-        });
+            
+            function refreshAll()
+            {
+                refresh("/api/figure/total_accidents_by_days", "plot1")
+            }
+            
+            function refresh(url, plotId) {
+                req = $.ajax({
+                    url : url,
+                    type : "GET",
+                    data: {s: $("#s").val(), e: $("#e").val()}
+                });
+        
+                req.done(function(data) {
+                    $("#"+plotId).fadeOut(100).fadeIn(300);
+                    Plotly.react(plotId, data, {});     
+                });
+            }
     	
     	</script>
     </head>
     <body>
-        <div id="image">
+        <form id="form1" action="#">
+          <label for="s">Date from:</label>
+          <input type="date" id="s" name="s" /><br/>
+          <label for="e">Date to:</label>
+          <input type="date" id="e" name="e" /><br/>
+          <input type="submit">
+        </form>
+        
+        <div id="plot1">
             <script>
-              var graphs = {{image}};
-
-              Plotly.plot('image', graphs, {});
+              var graphs = {{plot1}};
+              Plotly.plot('plot1', graphs, {});
             </script>
         </div>
-        {{ plot1 }}
+        
 		{{ plot2 }}
 		{{ plot3 }}
 		{{ plot4 }}

@@ -236,7 +236,7 @@ def encode_plot(fig, output=None):
         return fig.to_json()
     fig.show(renderer="browser")
     
-get_plot_total_accidents_by_county(output=None)
+#get_plot_total_accidents_by_county(output=None)
 #get_plot_total_accidents_by_weekdays()
 #get_plot_total_accidents_by_days()
 #print(get_start_date(None))

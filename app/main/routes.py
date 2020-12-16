@@ -18,9 +18,10 @@ from datetime import datetime
 def index():
     start_datetime = plots.get_start_datetime(None)
     end_datetime = plots.get_end_datetime(None)
-    return render_template('index.html', plot1=Markup(plots.get_plot_total_accidents_by_days(start_datetime, end_datetime)), plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime)),
+    return render_template('index.html', plot1=Markup(plots.get_plot_total_accidents_by_days(start_datetime, end_datetime, 'json')), 
+                           plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime)),
 	plot3=Markup(plots.get_plot_total_accidents_by_county(start_datetime, end_datetime)), plot4=Markup(plots.get_plot_total_accidents_by_district(start_datetime, end_datetime)), 
-    plot5=Markup(plots.get_plot_accident_by_time_in_day(start_datetime, end_datetime)), image=Markup(plots.get_plot_total_accidents_by_district(output='json')))
+    plot5=Markup(plots.get_plot_accident_by_time_in_day(start_datetime, end_datetime)))
 
 @app.route('/trends')    
 def accidents_trends():
@@ -52,17 +53,28 @@ def get_json_plot_accident_by_time_in_day():
     s, e = parse_datetimes()
     return Response(plots.get_plot_accident_by_time_in_day(s, e, 'json'), mimetype='application/json')
 
+@app.route('/api/figure/accident_trend_in_county/<county_id>')
+def get_json_plot_accident_trend_in_county(county_id):
+    s, e = parse_datetimes()
+    return Response(plots.get_plot_accident_trend_in_county(county_id, s, e, 'json'), mimetype='application/json')
+
+@app.route('/api/figure/accident_trend_in_district/<county_id>')
+def get_json_plot_accident_trend_in_district(district_id):
+    s, e = parse_datetimes()
+    return Response(plots.get_plot_accident_trend_in_district(district_id, s, e, 'json'), mimetype='application/json')
+
 def parse_datetimes():
     s = None
     e = None
     if 's' in request.args:
         try:
-            s = datetime.strptime(request.args.get('s'), '%d/%m/%Y %H:%M:%S')
+            s = datetime.strptime(request.args.get('s'), '%Y-%m-%d')
         except:
             pass
     if 'e' in request.args:
         try:
-            e = datetime.strptime(request.args.get('e'), '%d/%m/%Y %H:%M:%S')
+            e = datetime.strptime(request.args.get('e'), '%Y-%m-%d')
+            e = e.replace(hour=23, minute=59, second=59)
         except:
             pass    
     if s is not None and e is not None and s > e:
