@@ -16,12 +16,15 @@ from datetime import datetime
 @app.route('/')
 @app.route('/index')
 def index():
-    start_datetime = plots.get_start_datetime(None)
-    end_datetime = plots.get_end_datetime(None)
-    return render_template('index.html', plot1=Markup(plots.get_plot_total_accidents_by_days(start_datetime, end_datetime, 'json')), 
-                           plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime)),
-	plot3=Markup(plots.get_plot_total_accidents_by_county(start_datetime, end_datetime)), plot4=Markup(plots.get_plot_total_accidents_by_district(start_datetime, end_datetime)), 
-    plot5=Markup(plots.get_plot_accident_by_time_in_day(start_datetime, end_datetime)))
+    s, e = plots.get_datetime_limits(None, None)
+    return render_template('index.html', 
+                           start_date=s.strftime("%Y-%m-%d"),
+                           end_date=e.strftime("%Y-%m-%d"),
+                           plot1=Markup(plots.get_plot_total_accidents_by_days(s, e, 'json')), 
+                           plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')),
+                           plot3=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')), 
+                           plot4=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')), 
+                           plot5=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')))
 
 @app.route('/trends')    
 def accidents_trends():
@@ -69,12 +72,13 @@ def parse_datetimes():
     if 's' in request.args:
         try:
             s = datetime.strptime(request.args.get('s'), '%Y-%m-%d')
+            s = s.replace(hour=0, minute=0, second=0, microsecond=0)
         except:
             pass
     if 'e' in request.args:
         try:
             e = datetime.strptime(request.args.get('e'), '%Y-%m-%d')
-            e = e.replace(hour=23, minute=59, second=59)
+            e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
         except:
             pass    
     if s is not None and e is not None and s > e:

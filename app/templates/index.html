@@ -6,15 +6,21 @@
     	<script>
         
             $(document).ready(function(){
-                $("#form1").submit(function(event) {
-                      refreshAll()
-                      event.preventDefault();
+                $( "#s" ).change(function() {
+                  refreshAll()
+                });
+                $( "#e" ).change(function() {
+                  refreshAll()
                 });
             });
             
             function refreshAll()
             {
                 refresh("/api/figure/total_accidents_by_days", "plot1")
+                refresh("/api/figure/avg_accidents_by_weekdays", "plot2")
+                refresh("/api/figure/total_accidents_by_county", "plot3")
+                refresh("/api/figure/total_accidents_by_district", "plot4")
+                refresh("/api/figure/accident_by_time_in_day", "plot5")
             }
             
             function refresh(url, plotId) {
@@ -35,10 +41,9 @@
     <body>
         <form id="form1" action="#">
           <label for="s">Date from:</label>
-          <input type="date" id="s" name="s" /><br/>
-          <label for="e">Date to:</label>
-          <input type="date" id="e" name="e" /><br/>
-          <input type="submit">
+          <input type="date" id="s" name="s" value="{{ start_date }}" />
+          <label style="margin-left:30px;" for="e">Date to:</label>
+          <input type="date" id="e" name="e" value="{{ end_date }}" /><br/>
         </form>
         
         <div id="plot1">
@@ -48,9 +53,33 @@
             </script>
         </div>
         
-		{{ plot2 }}
-		{{ plot3 }}
-		{{ plot4 }}
-		{{ plot5 }}
+        <div id="plot2">
+            <script>
+              var graphs = {{plot2}};
+              Plotly.plot('plot2', graphs, {});
+            </script>
+        </div>
+        
+        <div id="plot3">
+            <script>
+              var graphs = {{plot3}};
+              Plotly.plot('plot3', graphs, {});
+            </script>
+        </div>
+        
+        <div id="plot4">
+            <script>
+              var graphs = {{plot4}};
+              Plotly.plot('plot4', graphs, {});
+            </script>
+        </div>
+        
+        <div id="plot5">
+            <script>
+              var graphs = {{plot5}};
+              Plotly.plot('plot5', graphs, {});
+            </script>
+        </div>
+
     </body>
 </html>
