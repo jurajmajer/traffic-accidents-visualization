@@ -108,7 +108,7 @@ def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None,
         xaxis = dict(
             tickmode = 'array',
             tickvals = df['district'],
-            title_text = 'Kraj'
+            title_text = 'Okres'
         ),
         yaxis = dict(
             title_text = 'Absolútny počet nehôd'
