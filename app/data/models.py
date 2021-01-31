@@ -6,7 +6,6 @@ Created on Thu Nov 26 22:57:49 2020
 """
 
 from app import db
-from app import app
 
 class County(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +21,13 @@ class District(db.Model):
     def __repr__(self):
         return '<District {}>'.format(self.name)
     
+class City(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    
+    def __repr__(self):
+        return '<City {}>'.format(self.name)
+    
 class TrafficAccident(db.Model):
     __tablename__ = 'trafficaccidents'
     
@@ -32,6 +38,8 @@ class TrafficAccident(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     countyId = db.Column(db.Integer, nullable=True)
     districtId = db.Column(db.Integer, nullable=True)
+    cityId = db.Column(db.Integer, nullable=True)
     
     def __repr__(self):
         return '<TrafficAccidents {}>'.format(self.overallStartTime)
+    

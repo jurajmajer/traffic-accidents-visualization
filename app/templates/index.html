@@ -21,6 +21,7 @@
                 refresh("/api/figure/total_accidents_by_county", "plot3")
                 refresh("/api/figure/total_accidents_by_district", "plot4")
                 refresh("/api/figure/accident_by_time_in_day", "plot5")
+                refresh("/api/figure/total_accidents_by_city", "plot6")
             }
             
             function refresh(url, plotId) {
@@ -78,6 +79,13 @@
             <script>
               var graphs = {{plot5}};
               Plotly.plot('plot5', graphs, {});
+            </script>
+        </div>
+        
+        <div id="plot6">
+            <script>
+              var graphs = {{plot6}};
+              Plotly.plot('plot6', graphs, {});
             </script>
         </div>
 

@@ -1,0 +1,26 @@
+OK cachovanie db dat, aby to bolo super rychle
+OK api methody - to_json -> js https://stackoverflow.com/questions/62655761/how-to-add-plotly-graph-config-when-converting-to-json-through-flask-not-using, https://medium.com/@vworri/use-plotly-in-javascript-to-creat-a-bar-graph-from-json-82d7220b463d
+- urobenie prvkov na vyber datumu, county id a district id
+- styling plotly grafov
+- styling html
+- if 0 in some x axis
+- logging
+- localization
+- fórum, názory
+
+Extravilán:
+- Počet nehôd na 1km za všetky cesty - vyňať z diaľníc mestá (D1 a D2)
+- Počet nehôd na 1km podľa typu cesty
+- View: per cesta - mapa, zoznam nehôd, date picker, graf nehôd v závislosti od času
+
+Intravilán:
+- Zoznam ulíc za mestá
+- View: per okres - mapa, markery, date picker, graf nehôd v závislosti od času
+- View: per kraj - mapa, markery, date picker, graf nehôd v závislosti od času
+
+TASKS:
+OK zjednotiť cesty - odoprave / ssc / google
+OK inštalovať a setupovať nginx, gunicorn na UB
+OK rozbehať na UB to čo máme na localhoste
+4. Extravilán
+5. Intravilán

@@ -24,7 +24,8 @@ def index():
                            plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')),
                            plot3=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')), 
                            plot4=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')), 
-                           plot5=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')))
+                           plot5=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
+                           plot6=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')))
 
 @app.route('/trends')    
 def accidents_trends():
@@ -56,6 +57,11 @@ def get_json_plot_accident_by_time_in_day():
     s, e = parse_datetimes()
     return Response(plots.get_plot_accident_by_time_in_day(s, e, 'json'), mimetype='application/json')
 
+@app.route('/api/figure/total_accidents_by_city')
+def get_json_plot_total_accidents_by_city():
+    s, e = parse_datetimes()
+    return Response(plots.get_plot_total_accidents_by_city(s, e, 'json'), mimetype='application/json')
+
 @app.route('/api/figure/accident_trend_in_county/<county_id>')
 def get_json_plot_accident_trend_in_county(county_id):
     s, e = parse_datetimes()
@@ -83,6 +89,12 @@ def parse_datetimes():
             pass    
     if s is not None and e is not None and s > e:
         s = None
-        e = None    
+        e = None
+    now = datetime.now()
+    now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    if s is not None and s >= now:
+        s = None
+    if e is not None and e >= now:
+        e = None
     return s, e 
     

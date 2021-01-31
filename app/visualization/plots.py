@@ -117,6 +117,34 @@ def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None,
     )
     return encode_plot(fig, output)
 
+def get_plot_total_accidents_by_city(start_datetime=None, end_datetime=None, output='html'):
+    u.perf_start()
+    s, e = get_datetime_limits(start_datetime, end_datetime)
+    data = d.get_traffic_accident_by_date(s, e)['cityId']
+    city_names = d.get_city()
+    data = data.value_counts()
+    data.index = data.index.map(lambda p: city_names.loc[p]['name'] if p in city_names.index else 'NA')
+    zeroes = pd.Series(data=0, index=city_names.name)
+    data = data + zeroes
+    data = data.fillna(0)
+    data = data.sort_values().tail(50)
+    df = pd.DataFrame(dict(city=data.index, count=data.values))
+    u.perf_lap()
+    
+    fig = px.bar(df, x='city', y='count', title="Absolútny počet nehôd podľa obce (TOP 50)" + get_title_suffix(s, e))
+    fig.update_layout(
+        xaxis = dict(
+            tickmode = 'array',
+            tickvals = df['city'],
+            title_text = 'Obec'
+        ),
+        yaxis = dict(
+            title_text = 'Absolútny počet nehôd'
+        ),
+        dragmode=False
+    )
+    return encode_plot(fig, output)
+
 def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_datetime=None, output='html'):
     u.perf_start()
     s, e = get_datetime_limits(start_datetime, end_datetime)
