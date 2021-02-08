@@ -11,18 +11,17 @@ import pandas as pd
 import plotly.express as px
 
 from app.data import datasource as d
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from app.main import utils as u
+from app.visualization import viz_utils as vu
+from dateutil.relativedelta import relativedelta
 
-def get_plot_total_accidents_by_days(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['overallStartTime']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     data = data.map(lambda p: p.date()).value_counts().sort_index()
     df = pd.DataFrame(dict(date=data.index, count=data.values))
     
-    fig = px.bar(df, x='date', y='count', title="Histogram nehôd - počet nehôd za deň" + get_title_suffix(s, e))
+    fig = px.bar(df, x='date', y='count', title="Histogram nehôd - počet nehôd za deň" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -39,16 +38,15 @@ def get_plot_total_accidents_by_days(start_datetime=None, end_datetime=None, out
     u.perf_lap()
     return encode_plot(fig, output)
 
-def get_plot_avg_accidents_by_weekdays(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['overallStartTime']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     data = data.map(lambda p: p.date())
     data = data.map(lambda p: p.weekday()).value_counts().sort_index() / pd.Series(data.unique()).map(lambda p: p.weekday()).value_counts().sort_index()
     df = pd.DataFrame(dict(weekday=data.index, avg_count=data.values))
     u.perf_lap()
     
-    fig = px.bar(df, x='weekday', y='avg_count', title="Priemerný počet nehôd podľa dňa v týždni" + get_title_suffix(s, e))
+    fig = px.bar(df, x='weekday', y='avg_count', title="Priemerný počet nehôd podľa dňa v týždni" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -63,10 +61,9 @@ def get_plot_avg_accidents_by_weekdays(start_datetime=None, end_datetime=None, o
     )
     return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['countyId']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
     county_names = d.get_county()
     data = data.value_counts()
     data.index = data.index.map(lambda p: county_names.loc[p]['name'])
@@ -75,7 +72,7 @@ def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, o
     u.perf_lap()
     
     
-    fig = px.bar(df, x='county', y='count', title="Absolútny počet nehôd podľa kraju" + get_title_suffix(s, e))
+    fig = px.bar(df, x='county', y='count', title="Absolútny počet nehôd podľa kraju" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -89,10 +86,9 @@ def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, o
     )
     return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['districtId']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['districtId']
     district_names = d.get_district()
     data = data.value_counts()
     data.index = data.index.map(lambda p: district_names.loc[p]['name'])
@@ -103,7 +99,7 @@ def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None,
     df = pd.DataFrame(dict(district=data.index, count=data.values))
     u.perf_lap()
     
-    fig = px.bar(df, x='district', y='count', title="Absolútny počet nehôd podľa okresu" + get_title_suffix(s, e))
+    fig = px.bar(df, x='district', y='count', title="Absolútny počet nehôd podľa okresu" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -117,10 +113,9 @@ def get_plot_total_accidents_by_district(start_datetime=None, end_datetime=None,
     )
     return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_city(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['cityId']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['cityId']
     city_names = d.get_city()
     data = data.value_counts()
     data.index = data.index.map(lambda p: city_names.loc[p]['name'] if p in city_names.index else 'NA')
@@ -131,7 +126,7 @@ def get_plot_total_accidents_by_city(start_datetime=None, end_datetime=None, out
     df = pd.DataFrame(dict(city=data.index, count=data.values))
     u.perf_lap()
     
-    fig = px.bar(df, x='city', y='count', title="Absolútny počet nehôd podľa obce (TOP 50)" + get_title_suffix(s, e))
+    fig = px.bar(df, x='city', y='count', title="Absolútny počet nehôd podľa obce (TOP 50)" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -145,10 +140,9 @@ def get_plot_total_accidents_by_city(start_datetime=None, end_datetime=None, out
     )
     return encode_plot(fig, output)
 
-def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_datetime=None, output='html'):
+def get_plot_accident_trend_in_county(county_id, start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.countyId == county_id]['overallStartTime']
     data = data.map(lambda p: p.date())
     data = data.value_counts().sort_index()
@@ -156,7 +150,7 @@ def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_dateti
     u.perf_lap()
     
     county_names = d.get_county()
-    fig = px.line(df, x='date', y='count', title="Vývoj nehôd v čase pre " + county_names.loc[county_id]['name'] + get_title_suffix(s, e))
+    fig = px.line(df, x='date', y='count', title="Vývoj nehôd v čase pre " + county_names.loc[county_id]['name'] + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -171,18 +165,17 @@ def get_plot_accident_trend_in_county(county_id, start_datetime=None, end_dateti
     )
     return encode_plot(fig, output)
     
-def get_plot_accident_trend_in_district(district_id, start_datetime=None, end_datetime=None, output='html'):
+def get_plot_accident_trend_in_district(district_id, start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.districtId == district_id]['overallStartTime']
     data = data.map(lambda p: p.date())
     data = data.value_counts().sort_index()
+    add_zeroes_datetime(data, start_datetime.date(), end_datetime.date())
     df = pd.DataFrame(dict(date=data.index, count=data.values))
     u.perf_lap()
     
-    district_names = d.get_district()
-    fig = px.line(df, x='date', y='count', title="Vývoj nehôd v čase pre okres " + district_names.loc[district_id]['name'] + get_title_suffix(s, e))
+    fig = px.scatter(df, x='date', y='count', title="Histogram nehôd - počet nehôd za deň pre okres " + vu.get_district_name(district_id) + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -195,19 +188,19 @@ def get_plot_accident_trend_in_district(district_id, start_datetime=None, end_da
         ),
         dragmode=False
     )
+    
     return encode_plot(fig, output)
 
-def get_plot_accident_by_time_in_day(start_datetime=None, end_datetime=None, output='html'):
+def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    s, e = get_datetime_limits(start_datetime, end_datetime)
-    data = d.get_traffic_accident_by_date(s, e)['overallStartTime']
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     total_count = data.size
     data = data.map(lambda p: p.time().hour).value_counts().sort_index()
     data = data * 100 / total_count
     df = pd.DataFrame(dict(hour=data.index, pct=data.values))
     u.perf_lap()
     
-    fig = px.bar(df, x='hour', y='pct', title="Percento nehôd podľa hodiny v dni" + get_title_suffix(s, e))
+    fig = px.bar(df, x='hour', y='pct', title="Percento nehôd podľa hodiny v dni" + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -221,14 +214,12 @@ def get_plot_accident_by_time_in_day(start_datetime=None, end_datetime=None, out
     )
     return encode_plot(fig, output)
 
-def get_datetime_limits(start_datetime, end_datetime):
-    if end_datetime is None:
-        end_datetime = datetime.now() - relativedelta(days=1)
-        end_datetime = end_datetime.replace(hour=23, minute=59, second=59, microsecond=999999)
-    if start_datetime is None:
-        start_datetime = end_datetime - relativedelta(days=30)
-        start_datetime = start_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-    return start_datetime, end_datetime
+def add_zeroes_datetime(df, s, e):
+    c = s
+    while c <= e:
+        if c not in df:
+            df[c] = 0
+        c += relativedelta(days=1)
 
 def get_title_suffix(start_datetime, end_datetime):
     retval = " (" + start_datetime.strftime("%d/%m/%Y")
@@ -284,3 +275,9 @@ def encode_plot(fig, output=None):
 #get_plot_total_accidents_by_days()
 #print(get_start_date(None))
 #print(get_end_date(None))
+#from datetime import datetime
+#s = datetime.strptime('2021-01-06', '%Y-%m-%d')
+#s = s.replace(hour=0, minute=0, second=0, microsecond=0)
+#e = datetime.strptime('2021-02-05', '%Y-%m-%d')
+#e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
+#get_plot_accident_trend_in_district(101, s, e)
