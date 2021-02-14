@@ -19,7 +19,7 @@ from dateutil.relativedelta import relativedelta
 @app.route('/')
 @app.route('/index')
 def index():
-    s, e = plots.get_datetime_limits(None, None)
+    s, e = parse_datetimes()
     return render_template('index.html', 
                            start_date=s.strftime("%Y-%m-%d"),
                            end_date=e.strftime("%Y-%m-%d"),
@@ -34,10 +34,16 @@ def index():
 def accidents_trends():
     return render_template('trends.html', plot1=Markup(plots.get_plot_accident_trend_in_county(1)), 
                            plot2=Markup(plots.get_plot_accident_trend_in_district(102)))
-  
-@app.route('/maps')
-def map1():
-    return render_template('map.html', map1=Markup(maps.get_map()))
+    
+@app.route('/district')
+def district():
+    s, e = parse_datetimes()
+    return render_template('district.html',
+                           start_date=s.strftime("%Y-%m-%d"),
+                           end_date=e.strftime("%Y-%m-%d"),
+                           choropleth_map=Markup(maps.get_district_choropleth(s, e)),
+                           plot1=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json'))
+                           )
 
 @app.route('/district_detail/<district_id>')
 def district_detail(district_id):
@@ -94,19 +100,20 @@ def get_json_plot_accident_trend_in_district(district_id):
     return Response(plots.get_plot_accident_trend_in_district(district_id, s, e, 'json'), mimetype='application/json')
 
 @app.route('/api/map/district_detail_map/<district_id>')
-def get_district_detail_map(district_id):
+def get_map_district_detail(district_id):
     district_id = int(district_id)
     s, e = parse_datetimes()
     return Response(maps.get_district_detail_map(district_id, s, e, 'json'), mimetype='application/json')
 
+@app.route('/api/map/choropleth_district')
+def get_map_choropleth_district():
+    s, e = parse_datetimes()
+    return Response(maps.get_district_choropleth(s, e, 'json'), mimetype='application/json')
+    
+
 @app.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('js', path)
-
-@app.route('/api/map/1')
-def get_json_map():
-    s, e = parse_datetimes()
-    return Response(maps.get_map(s, e, 'json'), mimetype='application/json')
 
 def parse_datetimes():
     s = None

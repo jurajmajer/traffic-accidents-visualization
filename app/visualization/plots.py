@@ -88,28 +88,28 @@ def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, o
 
 def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['districtId']
-    district_names = d.get_district()
-    data = data.value_counts()
-    data.index = data.index.map(lambda p: district_names.loc[p]['name'])
-    zeroes = pd.Series(data=0, index=district_names.name)
-    data = data + zeroes
-    data = data.fillna(0)
-    data = data.sort_values()
-    df = pd.DataFrame(dict(district=data.index, count=data.values))
+    acc = d.get_traffic_accident_by_date(start_datetime, end_datetime)['districtId']
+    acc = acc.value_counts()
+    data = d.get_district()
+    data['count'] = 0
+    data['count'] += acc
+    data['count'] = data['count'].fillna(0)
+    data.sort_values(by='count', inplace=True)
     u.perf_lap()
     
-    fig = px.bar(df, x='district', y='count', title="Absolútny počet nehôd podľa okresu" + get_title_suffix(start_datetime, end_datetime))
+    fig = px.bar(data, x='name', y='count', title="Absolútny počet nehôd podľa okresu" + get_title_suffix(start_datetime, end_datetime),
+                 custom_data=[data.index])
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
-            tickvals = df['district'],
+            tickvals = data['name'],
             title_text = 'Okres'
         ),
         yaxis = dict(
             title_text = 'Absolútny počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return encode_plot(fig, output)
 
@@ -280,4 +280,4 @@ def encode_plot(fig, output=None):
 #s = s.replace(hour=0, minute=0, second=0, microsecond=0)
 #e = datetime.strptime('2021-02-05', '%Y-%m-%d')
 #e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
-#get_plot_accident_trend_in_district(101, s, e)
+#get_plot_total_accidents_by_district(s, e, None)

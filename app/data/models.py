@@ -39,6 +39,7 @@ class TrafficAccident(db.Model):
     countyId = db.Column(db.Integer, nullable=True)
     districtId = db.Column(db.Integer, nullable=True)
     cityId = db.Column(db.Integer, nullable=True)
+    roadNumber = db.Column(db.String(32), nullable=True)
     
     def __repr__(self):
         return '<TrafficAccidents {}>'.format(self.overallStartTime)

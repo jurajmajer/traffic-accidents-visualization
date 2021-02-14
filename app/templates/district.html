@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>Districts</title>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/js/date-picker.js"></script>
+        <script>
+        
+            function refreshAll()
+            {
+                refresh("/api/map/choropleth_district", "choropleth_map")
+                refresh("/api/figure/total_accidents_by_district", "plot1")
+            }
+            
+            $(function() {
+            
+                var choroplethDiv = document.getElementById('choropleth_map')
+                choroplethDiv.on('plotly_click', function(data){
+                	if(data.points.length > 0)
+                	{
+                    	var url = "/district_detail/" + data.points[0].properties.IDN3
+                    	window.location.href = url
+                	}
+            	});
+            	
+            	var plotDiv = document.getElementById('plot1')
+                plotDiv.on('plotly_click', function(data){
+                	if(data.points.length > 0)
+                	{
+                    	var url = "/district_detail/" + data.points[0].customdata[0]
+                    	window.location.href = url
+                	}
+            	});
+            });
+            
+            
+
+    	
+    	</script>
+    </head>
+    <body>
+        <form id="form1" action="#">
+          <label for="s">Date from:</label>
+          <input type="date" id="s" name="s" value="{{ start_date }}" />
+          <label style="margin-left:30px;" for="e">Date to:</label>
+          <input type="date" id="e" name="e" value="{{ end_date }}" /><br/>
+        </form>
+        
+		<div id="choropleth_map" style="height:600px;">
+            <script>
+              var data = {{choropleth_map}};
+              Plotly.plot('choropleth_map', data, {});
+            </script>
+        </div>
+        
+        <div id="plot1" style="height:600px;">
+            <script>
+              var graphs = {{plot1}};
+              Plotly.plot('plot1', graphs, {});
+            </script>
+        </div>
+        
+    </body>
+</html>
