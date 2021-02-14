@@ -12,6 +12,7 @@ from app.data import datasource as d
 from app.visualization import plots
 import pandas as pd
 import json
+import os
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -32,7 +33,8 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
     data = data.fillna(0)
     data = data.sort_values()
     df = pd.DataFrame(dict(district=data.index, count=data.values))
-    with open('districts_epsg_4326.geojson.txt', encoding='utf-8') as file:
+    geojson_file = os.path.join(os.path.dirname(__file__), 'districts_epsg_4326.geojson.txt')
+    with open(geojson_file, encoding='utf-8') as file:
         geo_districts = json.loads(file.read())
     fig = px.choropleth(data_frame=df, geojson=geo_districts, featureidkey='properties.NM3', locations='district', color='count',
                            color_continuous_scale='tealrose',
