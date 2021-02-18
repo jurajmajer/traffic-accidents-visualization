@@ -45,6 +45,37 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
     return plots.encode_plot(fig, output)
+
+def get_county_detail_map(county_id, start_datetime, end_datetime, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data[data['countyId']==county_id]
+    data['marker_size'] = 10
+    center_lat = (data['latitude'].min() + data['latitude'].max()) / 2
+    center_lon = (data['longitude'].min() + data['longitude'].max()) / 2
+    
+    return get_accident_scatter_map(data, output, 9, {'lat':center_lat, 'lon':center_lon})
+
+def get_county_choropleth(start_datetime, end_datetime, output='json'):
+    acc = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
+    acc = acc.value_counts()
+    data = d.get_county()
+    data['count'] = 0
+    data['count'] += acc
+    data['count'] = data['count'].fillna(0)
+    
+    geojson_file = os.path.join(os.path.dirname(__file__), 'regions_epsg_4326.geojson.txt')
+    with open(geojson_file, encoding='utf-8') as file:
+        geo_counties = json.loads(file.read())
+    fig = px.choropleth(data_frame=data, geojson=geo_counties, featureidkey='properties.IDN4', locations=data.index, color='count',
+                           color_continuous_scale='tealrose',
+                           range_color=(0, data['count'].mean()*2),
+                           projection='sinusoidal', 
+                           labels={'count':'Počet nehôd', 'index':'Kraj'},
+                           hover_name=data['name'],
+                           title='Celkový počet nehôd podľa kraju')
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+    return plots.encode_plot(fig, output)
     
 def get_accident_scatter_map(data, output, zoom, center):
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',

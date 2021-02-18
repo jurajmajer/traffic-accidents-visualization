@@ -58,6 +58,29 @@ def district_detail(district_id):
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e))
                            )
     
+@app.route('/county')
+def county():
+    s, e = parse_datetimes()
+    return render_template('county.html',
+                           start_date=s.strftime("%Y-%m-%d"),
+                           end_date=e.strftime("%Y-%m-%d"),
+                           choropleth_map=Markup(maps.get_county_choropleth(s, e)),
+                           plot1=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json'))
+                           )
+
+@app.route('/county_detail/<county_id>')
+def county_detail(county_id):
+    county_id = int(county_id)
+    s, e = parse_datetimes()
+    return render_template('county_detail.html',
+                           start_date=s.strftime("%Y-%m-%d"),
+                           end_date=e.strftime("%Y-%m-%d"),
+                           county_name = vu.get_county_name(county_id),
+                           county_id = county_id,
+                           detail_map=Markup(maps.get_county_detail_map(county_id, s, e)),
+                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e))
+                           )
+    
 @app.route('/api/figure/total_accidents_by_days')
 def get_json_plot_total_accidents_by_days():
     s, e = parse_datetimes()
@@ -90,6 +113,7 @@ def get_json_plot_total_accidents_by_city():
 
 @app.route('/api/figure/accident_trend_in_county/<county_id>')
 def get_json_plot_accident_trend_in_county(county_id):
+    county_id = int(county_id)
     s, e = parse_datetimes()
     return Response(plots.get_plot_accident_trend_in_county(county_id, s, e, 'json'), mimetype='application/json')
 
@@ -105,11 +129,21 @@ def get_map_district_detail(district_id):
     s, e = parse_datetimes()
     return Response(maps.get_district_detail_map(district_id, s, e, 'json'), mimetype='application/json')
 
+@app.route('/api/map/county_detail_map/<county_id>')
+def get_map_county_detail(county_id):
+    county_id = int(county_id)
+    s, e = parse_datetimes()
+    return Response(maps.get_county_detail_map(county_id, s, e, 'json'), mimetype='application/json')
+
 @app.route('/api/map/choropleth_district')
 def get_map_choropleth_district():
     s, e = parse_datetimes()
     return Response(maps.get_district_choropleth(s, e, 'json'), mimetype='application/json')
     
+@app.route('/api/map/choropleth_county')
+def get_map_choropleth_county():
+    s, e = parse_datetimes()
+    return Response(maps.get_county_choropleth(s, e, 'json'), mimetype='application/json')
 
 @app.route('/js/<path:path>')
 def send_js(path):

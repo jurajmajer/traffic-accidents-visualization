@@ -19,3 +19,8 @@ function refresh(url, plotId) {
 		Plotly.react(plotId, data, {});     
 	});
 }
+
+function getDatePickerQueryString() {
+    var data = {s: $("#s").val(), e: $("#e").val()}
+    return jQuery.param( data )
+}

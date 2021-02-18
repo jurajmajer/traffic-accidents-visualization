@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Okres {{ district_name }}</title>
+        <title>{{ county_name }}</title>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="/js/date-picker.js"></script>
@@ -8,8 +8,8 @@
         
             function refreshAll()
             {
-                refresh("/api/map/district_detail_map/{{district_id}}", "detail_map")
-                refresh("/api/figure/accident_trend_in_district/{{district_id}}", "accident_trend_bar_plot")
+                refresh("/api/map/county_detail_map/{{county_id}}", "detail_map")
+                refresh("/api/figure/accident_trend_in_county/{{county_id}}", "accident_trend_bar_plot")
             }
     	
     	</script>

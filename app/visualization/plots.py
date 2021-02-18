@@ -61,28 +61,31 @@ def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='jso
     )
     return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_county(start_datetime=None, end_datetime=None, output='json'):
+def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='json'):
     u.perf_start()
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
-    county_names = d.get_county()
-    data = data.value_counts()
-    data.index = data.index.map(lambda p: county_names.loc[p]['name'])
-    data = data.sort_values()
-    df = pd.DataFrame(dict(county=data.index, count=data.values))
+    acc = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
+    acc = acc.value_counts()
+    data = d.get_county()
+    data['count'] = 0
+    data['count'] += acc
+    data['count'] = data['count'].fillna(0)
+    data.sort_values(by='count', inplace=True)
     u.perf_lap()
     
     
-    fig = px.bar(df, x='county', y='count', title="Absolútny počet nehôd podľa kraju" + get_title_suffix(start_datetime, end_datetime))
+    fig = px.bar(data, x='name', y='count', title="Absolútny počet nehôd podľa kraju" + get_title_suffix(start_datetime, end_datetime),
+                 custom_data=[data.index])
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
-            tickvals = df['county'],
+            tickvals = data['name'],
             title_text = 'Kraj'
         ),
         yaxis = dict(
             title_text = 'Absolútny počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return encode_plot(fig, output)
 
@@ -149,8 +152,7 @@ def get_plot_accident_trend_in_county(county_id, start_datetime, end_datetime, o
     df = pd.DataFrame(dict(date=data.index, count=data.values))
     u.perf_lap()
     
-    county_names = d.get_county()
-    fig = px.line(df, x='date', y='count', title="Vývoj nehôd v čase pre " + county_names.loc[county_id]['name'] + get_title_suffix(start_datetime, end_datetime))
+    fig = px.scatter(df, x='date', y='count', title="Vývoj nehôd v čase pre " + vu.get_county_name(county_id) + get_title_suffix(start_datetime, end_datetime))
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
