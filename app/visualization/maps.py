@@ -13,6 +13,7 @@ from app.visualization import plots
 import pandas as pd
 import json
 import os
+from app.main import utils as u
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -76,6 +77,51 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
     return plots.encode_plot(fig, output)
+
+def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    RADIUS = 0.5
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[data.roadNumber == road_number]
+    temp = []
+    for i, row in data.iterrows():
+        temp.append([row['id'], row['longitude'], row['latitude']])
+    acc_nearby = calculate_accidents_nearby_for_road(temp, RADIUS)
+    acc_nearby = {k: v for k, v in sorted(acc_nearby.items(), key=lambda item: -1*len(item[1]))}
+    used = set()
+    retval = []
+    i = 0
+    for acc in acc_nearby.keys():
+        if i >= max_number_accidents_returned:
+            break
+        if acc in used:
+            continue
+        print(str(acc) + ' : ' + str(len(acc_nearby[acc])))
+        used = set.union(used, acc_nearby[acc])
+        retval.append(acc)
+        i += 1
+    data = data.loc[data['id'].isin(retval)]
+    data['marker_size'] = 10
+    center_lat = (data['latitude'].min() + data['latitude'].max()) / 2
+    center_lon = (data['longitude'].min() + data['longitude'].max()) / 2
+    return get_accident_scatter_map(data, output, 8, {'lat':center_lat, 'lon':center_lon})
+
+def calculate_accidents_nearby_for_road(accidents, radius):
+    retval = {}
+    for i in range(len(accidents)):
+        this_accident = accidents[i]
+        if this_accident[0] not in retval:
+            retval[this_accident[0]] = set()
+        for j in range(len(accidents)):
+            if i >= j:
+                continue
+            a = accidents[j]
+            distance = u.haversine(this_accident[2], this_accident[1], a[2], a[1])
+            if distance < radius:
+                if a[0] not in retval:
+                    retval[a[0]] = set()
+                retval[this_accident[0]].add(a[0])
+                retval[a[0]].add(this_accident[0])
+    return retval
     
 def get_accident_scatter_map(data, output, zoom, center):
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
@@ -83,3 +129,8 @@ def get_accident_scatter_map(data, output, zoom, center):
                   hover_data=['overallStartTime'], zoom=zoom)
     return plots.encode_plot(fig, output)
     
+#s = datetime.strptime('2021-01-06', '%Y-%m-%d')
+#s = s.replace(hour=0, minute=0, second=0, microsecond=0)
+#e = datetime.strptime('2021-02-05', '%Y-%m-%d')
+#e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
+#get_map_with_most_frequent_accidents_for_road('D1', 20, s, e)

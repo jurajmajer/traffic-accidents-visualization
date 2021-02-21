@@ -15,6 +15,20 @@ from flask import Response
 from flask import request, send_from_directory
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from flask import g
+from timeit import default_timer as t
+
+MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS = 20
+
+@app.before_request
+def before_request():
+    g.start = t()
+
+@app.after_request
+def after_request(response):
+    diff = t() - g.start
+    print(request.path + ': ' + str(diff) + 's')
+    return response
 
 @app.route('/')
 @app.route('/index')
@@ -81,6 +95,17 @@ def county_detail(county_id):
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e))
                            )
     
+@app.route('/road_detail/<road_number>')
+def road_detail(road_number):
+    s, e = parse_datetimes()
+    return render_template('road_detail.html',
+                           start_date=s.strftime("%Y-%m-%d"),
+                           end_date=e.strftime("%Y-%m-%d"),
+                           road_number = road_number,
+                           detail_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
+                           accident_trend_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
+                           )
+    
 @app.route('/api/figure/total_accidents_by_days')
 def get_json_plot_total_accidents_by_days():
     s, e = parse_datetimes()
@@ -123,6 +148,11 @@ def get_json_plot_accident_trend_in_district(district_id):
     s, e = parse_datetimes()
     return Response(plots.get_plot_accident_trend_in_district(district_id, s, e, 'json'), mimetype='application/json')
 
+@app.route('/api/figure/accident_trend_on_road/<road_number>')
+def get_json_plot_accident_trend_on_road(road_number):
+    s, e = parse_datetimes()
+    return Response(plots.get_plot_accident_trend_on_road(road_number, s, e, 'json'), mimetype='application/json')
+
 @app.route('/api/map/district_detail_map/<district_id>')
 def get_map_district_detail(district_id):
     district_id = int(district_id)
@@ -134,6 +164,11 @@ def get_map_county_detail(county_id):
     county_id = int(county_id)
     s, e = parse_datetimes()
     return Response(maps.get_county_detail_map(county_id, s, e, 'json'), mimetype='application/json')
+
+@app.route('/api/map/road_detail_map/<road_number>')
+def get_map_road_detail(road_number):
+    s, e = parse_datetimes()
+    return Response(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json')
 
 @app.route('/api/map/choropleth_district')
 def get_map_choropleth_district():
