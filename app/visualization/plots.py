@@ -136,7 +136,7 @@ def get_plot_accident_trend_in_county(county_id, start_datetime, end_datetime, o
     data = data.loc[data.countyId == county_id]['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
-    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň pre kraj " + vu.get_county_name(county_id) + get_title_suffix(start_datetime, end_datetime))
+    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň pre " + vu.get_county_name(county_id) + get_title_suffix(start_datetime, end_datetime))
     return encode_plot(fig, output)
     
 def get_plot_accident_trend_in_district(district_id, start_datetime, end_datetime, output='json'):
@@ -183,18 +183,20 @@ def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
     return pd.DataFrame(dict(date=data.index, count=data.values))
 
 def get_plot_accident_trend(data, title):
-    fig = px.scatter(data, x='date', y='count', title=title)
+    fig = px.bar(data, x='date', y='count', title=title, labels={'count':'Počet nehôd', 'date':'Dátum'},)
     fig.update_layout(
         xaxis = dict(
-            tickmode = 'array',
-            tickvals = data['date'],
-            ticktext = get_date_xtickslabels(data['date']),
+            #tickangle=-45,
+            #tickmode = 'array',
+            #tickvals = data['date'],
+            tickformat = '%d. %B (%a)',
             title_text = 'Deň'
         ),
         yaxis = dict(
             title_text = 'Počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return fig
 
