@@ -241,7 +241,10 @@ def parse_datetimes_from_cookie():
     return s, e
 
 def set_date_cookie(response):
-    if 's' not in request.args or 'e' not in request.args:
+    s = None
+    e = None
+    s, e = parse_datetimes_from_query_string()
+    if s is None or e is None:
         return response
     response.set_cookie('start_date', request.args.get('s'))
     response.set_cookie('end_date', request.args.get('e'))
