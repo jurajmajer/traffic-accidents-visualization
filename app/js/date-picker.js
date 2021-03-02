@@ -43,8 +43,3 @@ function quickItemClicked(days) {
 	$( "#date-picker-start-id" ).val(firstDay.toISOString().slice(0, 10))
 	refreshAll()
 }
-
-function getDatePickerQueryString() {
-    var data = {s: $("#s").val(), e: $("#e").val()}
-    return jQuery.param( data )
-}

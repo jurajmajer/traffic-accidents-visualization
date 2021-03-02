@@ -14,7 +14,7 @@
 			choroplethDiv.on('plotly_click', function(data){
 				if(data.points.length > 0)
 				{
-					var url = "/county_detail/" + data.points[0].properties.IDN4 + "?" + getDatePickerQueryString()
+					var url = "/county_detail/" + data.points[0].properties.IDN4
 					window.location.href = url
 				}
 			});
@@ -23,7 +23,7 @@
 			plotDiv.on('plotly_click', function(data){
 				if(data.points.length > 0)
 				{
-					var url = "/county_detail/" + data.points[0].customdata[0] + "?" + getDatePickerQueryString()
+					var url = "/county_detail/" + data.points[0].customdata[0]
 					window.location.href = url
 				}
 			});
