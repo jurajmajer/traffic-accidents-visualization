@@ -1,42 +1,29 @@
-<html>
-    <head>
-        <title>{{ county_name }}</title>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        <script src="/js/plotly-locale-sk.js"></script>
-        <script>Plotly.setPlotConfig({locale: 'sk'})</script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="/js/date-picker.js"></script>
-        <script>
+{% extends "base.html" %}
+
+{% block head %}
+	<script>
         
-            function refreshAll()
-            {
-                refresh("/api/map/county_detail_map/{{county_id}}", "detail_map")
-                refresh("/api/figure/accident_trend_in_county/{{county_id}}", "accident_trend_bar_plot")
-            }
-    	
-    	</script>
-    </head>
-    <body>
-        <form id="form1" action="#">
-          <label for="s">Date from:</label>
-          <input type="date" id="s" name="s" value="{{ start_date }}" />
-          <label style="margin-left:30px;" for="e">Date to:</label>
-          <input type="date" id="e" name="e" value="{{ end_date }}" /><br/>
-        </form>
-        
-		<div id="detail_map" style="height:800px;">
-            <script>
-              var data = {{detail_map}};
-              Plotly.plot('detail_map', data, {});
-            </script>
-        </div>
-        
-        <div id="accident_trend_bar_plot">
-            <script>
-              var graphs = {{accident_trend_bar_plot}};
-              Plotly.plot('accident_trend_bar_plot', graphs, {});
-            </script>
-        </div>
-        
-    </body>
-</html>
+		function refreshAll()
+		{
+			refresh("/api/map/county_detail_map/{{county_id}}", "detail_map")
+			refresh("/api/figure/accident_trend_in_county/{{county_id}}", "accident_trend_bar_plot")
+		}
+	
+	</script>
+{% endblock %}
+
+{% block content %}
+    <div id="detail_map" style="height:800px;">
+		<script>
+		  var data = {{detail_map}};
+		  Plotly.plot('detail_map', data, {});
+		</script>
+	</div>
+	
+	<div id="accident_trend_bar_plot">
+		<script>
+		  var graphs = {{accident_trend_bar_plot}};
+		  Plotly.plot('accident_trend_bar_plot', graphs, {});
+		</script>
+	</div>
+{% endblock %}

@@ -7,6 +7,9 @@ Created on Sat Dec 12 22:03:18 2020
 
 from timeit import default_timer as t
 from math import radians, cos, sin, asin, sqrt
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from app.data import datasource as d
 
 perf_time_start = 0
 
@@ -41,3 +44,13 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * asin(sqrt(a)) 
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
     return c * r
+
+def get_min_date():
+    retval = d.get_traffic_accident_by_date()['overallStartTime'].min()
+    retval = retval.replace(hour=0, minute=0, second=0, microsecond=0)
+    return retval
+
+def get_max_date():
+    e = datetime.now() - relativedelta(days=1)
+    e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
+    return e
