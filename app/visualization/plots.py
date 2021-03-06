@@ -14,6 +14,13 @@ from app.data import datasource as d
 from app.visualization import viz_utils as vu
 from dateutil.relativedelta import relativedelta
 
+def get_plot_total_accident_trend(start_datetime, end_datetime, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
+    df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
+    
+    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň" + get_title_suffix(start_datetime, end_datetime))
+    return encode_plot(fig, output)
+
 def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     data = data.map(lambda p: p.date()).value_counts().sort_index()
@@ -30,7 +37,8 @@ def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'
         yaxis = dict(
             title_text = 'Počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     
     return encode_plot(fig, output)
@@ -52,7 +60,8 @@ def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='jso
         yaxis = dict(
             title_text = 'Priemerný počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return encode_plot(fig, output)
 
@@ -127,7 +136,8 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
         yaxis = dict(
             title_text = 'Absolútny počet nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return encode_plot(fig, output)
 
@@ -172,7 +182,8 @@ def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'
         yaxis = dict(
             title_text = 'Percento nehôd'
         ),
-        dragmode=False
+        dragmode=False,
+        margin={"r":0,"t":30,"l":0,"b":0}
     )
     return encode_plot(fig, output)
 

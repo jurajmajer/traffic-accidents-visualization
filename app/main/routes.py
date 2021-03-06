@@ -37,7 +37,8 @@ def index():
     s, e = parse_datetimes()
     tmpl = render_template('index.html', 
                            **get_date_kwargs(s, e),
-                           plot1=Markup(plots.get_plot_total_accidents_by_days(s, e, 'json')), 
+                           **get_general_kwargs('home'),
+                           plot1=Markup(plots.get_plot_total_accident_trend(s, e, 'json')), 
                            plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')),
                            plot3=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')), 
                            plot4=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')), 
@@ -50,6 +51,7 @@ def district():
     s, e = parse_datetimes()
     tmpl = render_template('district.html',
                            **get_date_kwargs(s, e),
+                           **get_general_kwargs('district'),
                            choropleth_map=Markup(maps.get_district_choropleth(s, e)),
                            plot1=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json'))
                            )
@@ -61,6 +63,7 @@ def district_detail(district_id):
     s, e = parse_datetimes()
     tmpl = render_template('district_detail.html',
                            **get_date_kwargs(s, e),
+                           **get_general_kwargs(None),
                            title = vu.get_district_name(district_id),
                            district_id = district_id,
                            detail_map=Markup(maps.get_district_detail_map(district_id, s, e)),
@@ -73,6 +76,7 @@ def county():
     s, e = parse_datetimes()
     tmpl = render_template('county.html',
                            **get_date_kwargs(s, e),
+                           **get_general_kwargs('county'),
                            choropleth_map=Markup(maps.get_county_choropleth(s, e)),
                            plot1=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json'))
                            )
@@ -84,6 +88,7 @@ def county_detail(county_id):
     s, e = parse_datetimes()
     tmpl = render_template('county_detail.html',
                            **get_date_kwargs(s, e),
+                           **get_general_kwargs(None),
                            title = vu.get_county_name(county_id),
                            county_id = county_id,
                            detail_map=Markup(maps.get_county_detail_map(county_id, s, e)),
@@ -96,16 +101,17 @@ def road_detail(road_number):
     s, e = parse_datetimes()
     tmpl = render_template('road_detail.html',
                            **get_date_kwargs(s, e),
+                           **get_general_kwargs(None),
                            road_number = road_number,
                            detail_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
                            accident_trend_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
                            )
     return set_date_cookie(make_response(tmpl))
     
-@app.route('/api/figure/total_accidents_by_days')
+@app.route('/api/figure/total_accident_trend')
 def get_json_plot_total_accidents_by_days():
     s, e = parse_datetimes()
-    return set_date_cookie(Response(plots.get_plot_total_accidents_by_days(s, e, 'json'), mimetype='application/json'))
+    return set_date_cookie(Response(plots.get_plot_total_accident_trend(s, e, 'json'), mimetype='application/json'))
 
 @app.route('/api/figure/avg_accidents_by_weekdays')
 def get_json_plot_avg_accidents_by_weekdays():
@@ -179,6 +185,14 @@ def get_map_choropleth_county():
 @app.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('js', path)
+
+def get_general_kwargs(navlink_active):
+    retval = {
+                'current_year': datetime.now().year
+             }
+    if navlink_active is not None:
+        retval['nav_link_'+navlink_active+'_active'] = ' w3-blue'
+    return retval
 
 def get_date_kwargs(s, e):
     retval = {

@@ -4,7 +4,7 @@
 	<script>
 		function refreshAll()
 		{
-			refresh("/api/figure/total_accidents_by_days", "plot1")
+			refresh("/api/figure/total_accident_trend", "plot1")
 			refresh("/api/figure/avg_accidents_by_weekdays", "plot2")
 			refresh("/api/figure/total_accidents_by_county", "plot3")
 			refresh("/api/figure/total_accidents_by_district", "plot4")
@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="plot1">
+    <div id="plot1" style="margin-right:20px;">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});
