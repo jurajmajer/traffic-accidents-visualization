@@ -194,7 +194,7 @@ def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
     return pd.DataFrame(dict(date=data.index, count=data.values))
 
 def get_plot_accident_trend(data, title):
-    fig = px.bar(data, x='date', y='count', title=title, labels={'count':'Počet nehôd', 'date':'Dátum'},)
+    fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum'},)
     fig.update_layout(
         xaxis = dict(
             #tickangle=-45,
@@ -204,10 +204,13 @@ def get_plot_accident_trend(data, title):
             title_text = 'Deň'
         ),
         yaxis = dict(
-            title_text = 'Počet nehôd'
+            title_text = 'Počet nehôd',
+            gridcolor='rgb(140,140,140)'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":30,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
     return fig
 

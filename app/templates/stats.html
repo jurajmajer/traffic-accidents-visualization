@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block head %}
+	<script>
+		function refreshAll()
+		{
+			refresh("/api/figure/avg_accidents_by_weekdays", "plot1")
+			refresh("/api/figure/accident_by_time_in_day", "plot2")
+			refresh("/api/figure/total_accidents_by_city", "plot3")
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+    <div id="plot1" style="margin-right:20px;">
+		<script>
+		  var graphs = {{plot1}};
+		  Plotly.plot('plot1', graphs, {});
+		</script>
+	</div>
+	
+	<div id="plot2">
+		<script>
+		  var graphs = {{plot2}};
+		  Plotly.plot('plot2', graphs, {});
+		</script>
+	</div>
+	
+	<div id="plot3">
+		<script>
+		  var graphs = {{plot3}};
+		  Plotly.plot('plot3', graphs, {});
+		</script>
+	</div>
+{% endblock %}

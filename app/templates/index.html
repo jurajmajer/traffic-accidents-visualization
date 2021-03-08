@@ -5,55 +5,19 @@
 		function refreshAll()
 		{
 			refresh("/api/figure/total_accident_trend", "plot1")
-			refresh("/api/figure/avg_accidents_by_weekdays", "plot2")
-			refresh("/api/figure/total_accidents_by_county", "plot3")
-			refresh("/api/figure/total_accidents_by_district", "plot4")
-			refresh("/api/figure/accident_by_time_in_day", "plot5")
-			refresh("/api/figure/total_accidents_by_city", "plot6")
 		}
 	</script>
 {% endblock %}
 
 {% block content %}
+    <div class="w3-panel">
+        <h2>Počet nehôd za deň na celom území SR (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    </div>
+    
     <div id="plot1" style="margin-right:20px;">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});
-		</script>
-	</div>
-	
-	<div id="plot2">
-		<script>
-		  var graphs = {{plot2}};
-		  Plotly.plot('plot2', graphs, {});
-		</script>
-	</div>
-	
-	<div id="plot3">
-		<script>
-		  var graphs = {{plot3}};
-		  Plotly.plot('plot3', graphs, {});
-		</script>
-	</div>
-	
-	<div id="plot4">
-		<script>
-		  var graphs = {{plot4}};
-		  Plotly.plot('plot4', graphs, {});
-		</script>
-	</div>
-	
-	<div id="plot5">
-		<script>
-		  var graphs = {{plot5}};
-		  Plotly.plot('plot5', graphs, {});
-		</script>
-	</div>
-	
-	<div id="plot6">
-		<script>
-		  var graphs = {{plot6}};
-		  Plotly.plot('plot6', graphs, {});
 		</script>
 	</div>
 {% endblock %}

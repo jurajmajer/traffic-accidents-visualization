@@ -18,7 +18,9 @@ from dateutil.relativedelta import relativedelta
 from flask import g
 from timeit import default_timer as t
 from app.main import utils as u
+import locale
 
+locale.setlocale(locale.LC_ALL, 'sk_SK')
 MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS = 20
 
 @app.before_request
@@ -36,24 +38,38 @@ def after_request(response):
 def index():
     s, e = parse_datetimes()
     tmpl = render_template('index.html', 
-                           **get_date_kwargs(s, e),
-                           **get_general_kwargs('home'),
+                           title='Štatistika dopravných nehôd v Slovenskej republike',
+                           page_title='Štatistika dopravných nehôd v Slovenskej republike',                           
                            plot1=Markup(plots.get_plot_total_accident_trend(s, e, 'json')), 
-                           plot2=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')),
-                           plot3=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')), 
-                           plot4=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')), 
-                           plot5=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
-                           plot6=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')))
+                           **get_date_kwargs(s, e),
+                           **get_general_kwargs('home')
+                           )
+    return set_date_cookie(make_response(tmpl))
+
+@app.route('/stats')
+def stats():
+    s, e = parse_datetimes()
+    tmpl = render_template('stats.html', 
+                           title='Ďalšie štatistiky',
+                           page_title='Ďalšie štatistiky',                           
+                           plot1=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')), 
+                           plot2=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
+                           plot3=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')),
+                           **get_date_kwargs(s, e),
+                           **get_general_kwargs('stats')
+                           )
     return set_date_cookie(make_response(tmpl))
     
 @app.route('/district')
 def district():
     s, e = parse_datetimes()
     tmpl = render_template('district.html',
+                           title='Prehľad dopravných nehôd podľa okresov',
+                           page_title='Prehľad dopravných nehôd podľa okresov',
+                           choropleth_map=Markup(maps.get_district_choropleth(s, e)),
+                           plot1=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')),
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('district'),
-                           choropleth_map=Markup(maps.get_district_choropleth(s, e)),
-                           plot1=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json'))
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -198,8 +214,8 @@ def get_date_kwargs(s, e):
     retval = {
                 'min_date':u.get_min_date().strftime("%Y-%m-%d"),
                 'max_date':u.get_max_date().strftime("%Y-%m-%d"),
-                'start_date':s.strftime("%Y-%m-%d"),
-                'end_date':e.strftime("%Y-%m-%d")
+                'start_date':s,
+                'end_date':e
               }
     return retval
 

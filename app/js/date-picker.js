@@ -21,6 +21,9 @@ $(document).ready(function(){
 	});
 });
 
+const monthNames = ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"
+];
+
 function refresh(url, plotId) {
 	req = $.ajax({
 		url : url,
@@ -30,7 +33,11 @@ function refresh(url, plotId) {
 
 	req.done(function(data) {
 		$("#"+plotId).fadeOut(100).fadeIn(300);
-		Plotly.react(plotId, data, {});     
+		Plotly.react(plotId, data, {});
+		d = document.getElementById('date-picker-start-id').valueAsDate
+		$("#"+plotId+"-start-date-label").text(d.getDate().toString().padStart(2, "0") + " " + monthNames[d.getMonth()] + " " + d.getFullYear());
+		d = document.getElementById('date-picker-end-id').valueAsDate
+		$("#"+plotId+"-end-date-label").text(d.getDate().toString().padStart(2, "0") + " " + monthNames[d.getMonth()] + " " + d.getFullYear());
 	});
 }
 
