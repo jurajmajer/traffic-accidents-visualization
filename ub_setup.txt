@@ -20,6 +20,8 @@ sudo ln -s /etc/nginx/sites-available/traffic-accidents-visualization /etc/nginx
 sudo nano /etc/nginx/nginx.conf (uncomment server_names_hash_bucket_size)
 sudo nginx -t
 sudo systemctl restart nginx
+sudo apt-get install language-pack-sk
+sudo dpkg-reconfigure locales
 
 gunicorn -b localhost:8000 -w 4 accidents:app
 sudo supervisorctl stop traffic-accidents-visualization

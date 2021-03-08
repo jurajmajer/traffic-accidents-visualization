@@ -20,7 +20,7 @@ from timeit import default_timer as t
 from app.main import utils as u
 import locale
 
-locale.setlocale(locale.LC_ALL, 'sk_SK')
+locale.setlocale(locale.LC_ALL, 'sk_SK.utf8')
 MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS = 20
 
 @app.before_request
