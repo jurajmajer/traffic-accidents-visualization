@@ -6,12 +6,17 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/traffic-accidents-visualization.css">
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/js/plotly-locale-sk.js"></script>
-<script>Plotly.setPlotConfig({locale: 'sk'})</script>
+<script>
+    Plotly.setPlotConfig({locale: 'sk'})
+    var config = {"displayModeBar": false}
+    Plotly.setPlotConfig(config)
+</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/js/date-picker.js"></script>
 {% block head %}{% endblock %}
@@ -48,10 +53,16 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <h1 class="w3-bar-item">{{page_title}}</h1>
     <div class="w3-bar-item w3-right" style="font-size: 17px;">
       <form id="form1" action="#">
-			<label for="s">Od:</label>
-			<input type="date" id="date-picker-start-id" name="s" value='{{start_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} />
-			<label style="margin-left:30px;" for="e">Do:</label>
-			<input type="date" id="date-picker-end-id" name="e" value='{{end_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} /><br/>
+            <div class="w3-bar">
+                <div class="w3-bar-item" style="padding:0px">
+        			<label for="s">Od:</label>
+        			<input type="date" id="date-picker-start-id" name="s" value='{{start_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} />
+            	</div>
+            	<div class="w3-bar-item date-picker-end-group" style="padding:0px">
+        			<label class="date-picker-end-label" for="e">Do:</label>
+        			<input type="date" id="date-picker-end-id" name="e" value='{{end_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} /><br/>
+        		</div>
+    		</div>
 			<div style="margin-top:10px;">
     			<a style="margin-right:20px;" href="#" id="date-picker-quick-week-id" style="date-picker-quick-item">týždeň</a>
     			<a style="margin-right:20px;" href="#" id="date-picker-quick-month-id" style="date-picker-quick-item">mesiac</a>

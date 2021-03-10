@@ -36,7 +36,7 @@ def after_request(response):
 @app.route('/')
 @app.route('/index')
 def index():
-    s, e = parse_datetimes()
+    s, e = parse_datetimes(u.get_min_date(), u.get_max_date())
     tmpl = render_template('index.html', 
                            title='Štatistika dopravných nehôd v Slovenskej republike',
                            page_title='Štatistika dopravných nehôd v Slovenskej republike',                           
@@ -202,6 +202,10 @@ def get_map_choropleth_county():
 def send_js(path):
     return send_from_directory('js', path)
 
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('css', path)
+
 def get_general_kwargs(navlink_active):
     retval = {
                 'current_year': datetime.now().year
@@ -219,10 +223,13 @@ def get_date_kwargs(s, e):
               }
     return retval
 
-def parse_datetimes():
+def parse_datetimes(default_start=None, default_end=None):
     s = None
     e = None
     s, e = parse_datetimes_from_query_string()
+    if s is None and e is None:
+        s = default_start
+        e = default_end
     if s is None and e is None:
         s, e = parse_datetimes_from_cookie()
     if s is not None and e is not None and s > e:

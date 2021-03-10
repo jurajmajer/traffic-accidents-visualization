@@ -197,20 +197,24 @@ def get_plot_accident_trend(data, title):
     fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum'},)
     fig.update_layout(
         xaxis = dict(
-            #tickangle=-45,
+            #tickangle=-30,
             #tickmode = 'array',
             #tickvals = data['date'],
-            tickformat = '%d. %B (%a)',
-            title_text = 'Deň'
+            tickformat = '%d. %m.',
+            title_text = 'Deň',
+            titlefont=dict(size=20),
         ),
+        height=500,
         yaxis = dict(
             title_text = 'Počet nehôd',
-            gridcolor='rgb(140,140,140)'
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
         ),
         dragmode=False,
         margin={"r":0,"t":30,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
     )
     return fig
 

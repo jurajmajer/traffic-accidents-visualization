@@ -14,7 +14,7 @@
         <h2>Počet nehôd za deň na celom území SR (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
     </div>
     
-    <div id="plot1" style="margin-right:20px;">
+    <div id="plot1">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});

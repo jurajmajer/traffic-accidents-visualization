@@ -1,0 +1,7 @@
+
+.date-picker-end-group { margin-top:20px; }
+
+@media screen and (min-width: 750px) { 
+	.date-picker-end-group { margin-top:0px; }
+	.date-picker-end-label { margin-left:30px; } 
+}
