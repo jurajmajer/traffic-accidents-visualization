@@ -44,7 +44,12 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
                            labels={'count':'Počet nehôd', 'district':'Okres'},
                            title='Celkový počet nehôd podľa okresu')
     fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+    fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+    )
     return plots.encode_plot(fig, output)
 
 def get_county_detail_map(county_id, start_datetime, end_datetime, output='json'):
@@ -75,7 +80,12 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
                            hover_name=data['name'],
                            title='Celkový počet nehôd podľa kraju')
     fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+    fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+    )
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
@@ -127,6 +137,11 @@ def get_accident_scatter_map(data, output, zoom, center):
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
                   mapbox_style="open-street-map", size='marker_size', size_max=10, opacity=0.8, hover_name='overallStartTime',
                   hover_data=['overallStartTime'], zoom=zoom)
+    fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+    )
     return plots.encode_plot(fig, output)
     
 #s = datetime.strptime('2021-01-06', '%Y-%m-%d')

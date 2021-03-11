@@ -38,7 +38,9 @@ def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'
             title_text = 'Počet nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     
     return encode_plot(fig, output)
@@ -61,7 +63,9 @@ def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='jso
             title_text = 'Priemerný počet nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     return encode_plot(fig, output)
 
@@ -86,7 +90,9 @@ def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='jso
             title_text = 'Absolútny počet nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     return encode_plot(fig, output)
 
@@ -111,7 +117,9 @@ def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='j
             title_text = 'Absolútny počet nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     return encode_plot(fig, output)
 
@@ -137,7 +145,9 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
             title_text = 'Absolútny počet nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     return encode_plot(fig, output)
 
@@ -183,7 +193,9 @@ def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'
             title_text = 'Percento nehôd'
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0}
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     return encode_plot(fig, output)
 
@@ -211,7 +223,7 @@ def get_plot_accident_trend(data, title):
             titlefont=dict(size=20),
         ),
         dragmode=False,
-        margin={"r":0,"t":30,"l":0,"b":0},
+        margin={"r":0,"t":0,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(size=14,),

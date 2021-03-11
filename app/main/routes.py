@@ -76,11 +76,13 @@ def district():
 @app.route('/district_detail/<district_id>')
 def district_detail(district_id):
     district_id = int(district_id)
+    district_name = vu.get_district_name(district_id)
     s, e = parse_datetimes()
     tmpl = render_template('district_detail.html',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
-                           title = vu.get_district_name(district_id),
+                           title='Prehľad dopravných nehôd pre okres ' + district_name,
+                           page_title='Prehľad dopravných nehôd pre okres ' + district_name,
                            district_id = district_id,
                            detail_map=Markup(maps.get_district_detail_map(district_id, s, e)),
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e))
@@ -91,6 +93,8 @@ def district_detail(district_id):
 def county():
     s, e = parse_datetimes()
     tmpl = render_template('county.html',
+                           title='Prehľad dopravných nehôd podľa krajov',
+                           page_title='Prehľad dopravných nehôd podľa krajov',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('county'),
                            choropleth_map=Markup(maps.get_county_choropleth(s, e)),
@@ -101,11 +105,13 @@ def county():
 @app.route('/county_detail/<county_id>')
 def county_detail(county_id):
     county_id = int(county_id)
+    county_name = vu.get_county_name(county_id)
     s, e = parse_datetimes()
     tmpl = render_template('county_detail.html',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
-                           title = vu.get_county_name(county_id),
+                           title='Prehľad dopravných nehôd pre ' + county_name,
+                           page_title='Prehľad dopravných nehôd pre ' + county_name,
                            county_id = county_id,
                            detail_map=Markup(maps.get_county_detail_map(county_id, s, e)),
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e))
