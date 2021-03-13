@@ -41,7 +41,9 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
                            color_continuous_scale='tealrose',
                            range_color=(0, df['count'].mean()*2),
                            projection='sinusoidal', 
-                           labels={'count':'Počet nehôd', 'district':'Okres'},
+                           labels={'count':'Počet nehôd'},
+                           hover_data={'district':False},
+                           hover_name=df['district'],
                            title='Celkový počet nehôd podľa okresu')
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(
@@ -96,6 +98,7 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
     for i, row in data.iterrows():
         temp.append([row['id'], row['longitude'], row['latitude']])
     acc_nearby = calculate_accidents_nearby_for_road(temp, RADIUS)
+    data['marker_size'] = data.apply(lambda x: len(acc_nearby[x['id']]), axis=1)
     acc_nearby = {k: v for k, v in sorted(acc_nearby.items(), key=lambda item: -1*len(item[1]))}
     used = set()
     retval = []
@@ -105,15 +108,23 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
             break
         if acc in used:
             continue
-        print(str(acc) + ' : ' + str(len(acc_nearby[acc])))
         used = set.union(used, acc_nearby[acc])
         retval.append(acc)
         i += 1
     data = data.loc[data['id'].isin(retval)]
-    data['marker_size'] = 10
-    center_lat = (data['latitude'].min() + data['latitude'].max()) / 2
-    center_lon = (data['longitude'].min() + data['longitude'].max()) / 2
-    return get_accident_scatter_map(data, output, 8, {'lat':center_lat, 'lon':center_lon})
+    data.sort_values(by='marker_size', inplace=True, ascending=False)
+    data['order'] = range(1,21)
+
+    fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
+                  mapbox_style="open-street-map", size='marker_size', size_max=data['marker_size'].max(), 
+                  opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
+                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Nehodový úsek v poradí'}, hover_data={'latitude':False, 'longitude':False, 'order':True}, zoom=8)
+    fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+    )
+    return plots.encode_plot(fig, output)
 
 def calculate_accidents_nearby_for_road(accidents, radius):
     retval = {}
