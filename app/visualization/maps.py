@@ -114,11 +114,15 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
     data = data.loc[data['id'].isin(retval)]
     data.sort_values(by='marker_size', inplace=True, ascending=False)
     data['order'] = range(1,21)
+    minM = data['marker_size'].min()
+    maxM = data['marker_size'].max()
+    data['projected_marker_size'] = data.apply(lambda x: 5 + (x['marker_size']-minM) * 45 / (maxM-minM), axis=1)
+    
 
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
-                  mapbox_style="open-street-map", size='marker_size', size_max=data['marker_size'].max(), 
+                  mapbox_style="open-street-map", size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
                   opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
-                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Nehodový úsek v poradí'}, hover_data={'latitude':False, 'longitude':False, 'order':True}, zoom=8)
+                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Nehodový úsek v poradí'}, hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=8)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
