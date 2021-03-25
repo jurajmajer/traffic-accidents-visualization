@@ -14,6 +14,7 @@ import pandas as pd
 import json
 import os
 from app.main import utils as u
+import collections
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -91,6 +92,8 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    #SELECT * FROM `nearbyaccidents` n join trafficaccidents t1 on n.accident1_id=t1.id join trafficaccidents t2 on n.accident2_id=t2.id where distance < 0.5 and t1.roadNumber='D1' and t2.roadNumber = 'D1'
+    #SELECT id, overallStartTime, count(*) as cnt FROM `trafficaccidents` t join nearbyaccidents n on t.id=n.accident2_id where n.distance < 0.5 and roadNumber='D1' group by id, overallStartTime order by cnt desc limit 100
     RADIUS = 0.5
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.roadNumber == road_number]
@@ -118,11 +121,58 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
     maxM = data['marker_size'].max()
     data['projected_marker_size'] = data.apply(lambda x: 5 + (x['marker_size']-minM) * 45 / (maxM-minM), axis=1)
     
-
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
                   mapbox_style="open-street-map", size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
                   opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
                   labels={'marker_size':'Počet nehôd v danom období', 'order':'Nehodový úsek v poradí'}, hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=8)
+    fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+    )
+    return plots.encode_plot(fig, output)
+
+def calculate_marker_size(x, minM, maxM):
+    if minM == maxM:
+        return 10
+    return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
+
+def get_map_with_most_frequent_accidents_for_road2(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    nearby_accidents = d.get_nearby_accidents_for_road(0.5, road_number=road_number, start_datetime, end_datetime)
+    c = collections.Counter()
+    for item in nearby_accidents:
+        c.update([item.accident1_id])
+        c.update([item.accident2_id])
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[data.roadNumber == road_number]
+    data['marker_size'] = data.apply(lambda x: c[x['id']], axis=1)
+    data = data.loc[data.marker_size > 0]
+    if len(data.index) == 0:#TODO
+        return
+    data.sort_values(by='marker_size', inplace=True, ascending=False)
+    temp = []
+    retval = []
+    for i, row in data.iterrows():
+        is_already_counted = False
+        for t in temp:
+            if u.haversine(t[2], t[1], row['latitude'], row['longitude']) < 0.5:
+                is_already_counted = True
+                break
+        if not is_already_counted:
+            temp.append([row['id'], row['longitude'], row['latitude']])
+            retval.append(row['id'])
+        if len(temp) >= max_number_accidents_returned:
+            break
+    data = data.loc[data['id'].isin(retval)]
+    data['order'] = range(1,len(data.index)+1)
+    minM = data['marker_size'].min()
+    maxM = data['marker_size'].max()
+    data['projected_marker_size'] = data.apply(lambda x: calculate_marker_size(x, minM, maxM), axis=1)
+    
+    fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
+                  mapbox_style='open-street-map', size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
+                  opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
+                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=8)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
@@ -163,4 +213,5 @@ def get_accident_scatter_map(data, output, zoom, center):
 #s = s.replace(hour=0, minute=0, second=0, microsecond=0)
 #e = datetime.strptime('2021-02-05', '%Y-%m-%d')
 #e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
-#get_map_with_most_frequent_accidents_for_road('D1', 20, s, e)
+#get_map_with_most_frequent_accidents_for_road('D3', 20, s, e)
+#get_map_with_most_frequent_accidents_for_road2('D3', 20, None, None)

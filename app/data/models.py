@@ -44,3 +44,14 @@ class TrafficAccident(db.Model):
     def __repr__(self):
         return '<TrafficAccidents {}>'.format(self.overallStartTime)
     
+class NearbyAccident(db.Model):
+    __tablename__ = 'nearbyaccidents'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    accident1_id = db.Column(db.Integer, nullable=False)
+    accident2_id = db.Column(db.Integer, nullable=False)
+    distance = db.Column(db.Float, nullable=False)
+    
+    def __repr__(self):
+        return '<NearbyAccident {}, {}, {}>'.format(self.accident1_id, self.accident2_id, self.distance)
+    

@@ -12,6 +12,7 @@ import pandas as pd
 from app import cache
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from sqlalchemy.orm import aliased
 
 def get_traffic_accident_by_date(start_date=None, end_date=None):
     retval = get_traffic_accident()
@@ -41,6 +42,41 @@ def get_city():
     return pd.DataFrame(index=[x.id for x in items],
                         data=[[x.name] for x in items],
                         columns=['name'])
+    
+def get_nearby_accidents_for_road(max_distance, county_id=None, district_id=None, city_id=None, road_number=None, start_date=None, end_date=None):
+    trafficAccident1 = aliased(m.TrafficAccident)
+    trafficAccident2 = aliased(m.TrafficAccident)
+    
+    query = m.NearbyAccident.query \
+    .join(trafficAccident1, m.NearbyAccident.accident1_id==trafficAccident1.id) \
+    .join(trafficAccident2, m.NearbyAccident.accident2_id==trafficAccident2.id) \
+    .filter(m.NearbyAccident.distance<max_distance)
+    
+    if county_id is not None:
+        query = query.filter(trafficAccident1.countyId == county_id)
+        query = query.filter(trafficAccident2.countyId == county_id)
+        
+    if district_id is not None:
+        query = query.filter(trafficAccident1.districtId == district_id)
+        query = query.filter(trafficAccident2.districtId == district_id)
+        
+    if city_id is not None:
+        query = query.filter(trafficAccident1.cityId == city_id)
+        query = query.filter(trafficAccident2.cityId == city_id)
+    
+    if road_number is not None:
+        query = query.filter(trafficAccident1.roadNumber == road_number)
+        query = query.filter(trafficAccident2.roadNumber == road_number)
+    
+    if start_date is not None:
+        query = query.filter(trafficAccident1.overallStartTime > start_date)
+        query = query.filter(trafficAccident2.overallStartTime > start_date)
+        
+    if end_date is not None:
+        query = query.filter(trafficAccident1.overallStartTime < end_date)
+        query = query.filter(trafficAccident2.overallStartTime < end_date)
+    
+    return query.all()
 
 def get_traffic_accident():
     cache_timestamp_key = 'get_traffic_accident_timestamp'
