@@ -138,7 +138,7 @@ def calculate_marker_size(x, minM, maxM):
     return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
-    nearby_accidents = d.get_nearby_accidents_for_road(0.5, road_number=road_number, start_datetime, end_datetime)
+    nearby_accidents = d.get_nearby_accidents_for_road(0.5, road_number=road_number, start_date=start_datetime, end_date=end_datetime)
     c = collections.Counter()
     for item in nearby_accidents:
         c.update([item.accident1_id])
