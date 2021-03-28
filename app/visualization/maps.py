@@ -91,7 +91,7 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
     )
     return plots.encode_plot(fig, output)
 
-def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+def get_map_with_most_frequent_accidents_for_road_old(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     #SELECT * FROM `nearbyaccidents` n join trafficaccidents t1 on n.accident1_id=t1.id join trafficaccidents t2 on n.accident2_id=t2.id where distance < 0.5 and t1.roadNumber='D1' and t2.roadNumber = 'D1'
     #SELECT id, overallStartTime, count(*) as cnt FROM `trafficaccidents` t join nearbyaccidents n on t.id=n.accident2_id where n.distance < 0.5 and roadNumber='D1' group by id, overallStartTime order by cnt desc limit 100
     RADIUS = 0.5
@@ -137,7 +137,7 @@ def calculate_marker_size(x, minM, maxM):
         return 10
     return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
 
-def get_map_with_most_frequent_accidents_for_road2(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     nearby_accidents = d.get_nearby_accidents_for_road(0.5, road_number=road_number, start_datetime, end_datetime)
     c = collections.Counter()
     for item in nearby_accidents:
