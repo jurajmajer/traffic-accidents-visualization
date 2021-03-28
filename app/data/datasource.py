@@ -43,7 +43,7 @@ def get_city():
                         data=[[x.name] for x in items],
                         columns=['name'])
     
-def get_nearby_accidents_for_road(max_distance, county_id=None, district_id=None, city_id=None, road_number=None, start_date=None, end_date=None):
+def get_nearby_accidents(max_distance, county_id=None, district_id=None, city_id=None, road_number=None, start_date=None, end_date=None):
     trafficAccident1 = aliased(m.TrafficAccident)
     trafficAccident2 = aliased(m.TrafficAccident)
     

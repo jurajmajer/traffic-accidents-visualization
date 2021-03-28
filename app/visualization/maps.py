@@ -15,6 +15,7 @@ import json
 import os
 from app.main import utils as u
 import collections
+#from timeit import default_timer as tim
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -138,13 +139,22 @@ def calculate_marker_size(x, minM, maxM):
     return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
-    nearby_accidents = d.get_nearby_accidents_for_road(0.5, road_number=road_number, start_date=start_datetime, end_date=end_datetime)
+    nearby_accidents = d.get_nearby_accidents(0.5, road_number=road_number, start_date=start_datetime, end_date=end_datetime)
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[data.roadNumber == road_number]
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output)
+
+def get_map_with_most_frequent_accidents_for_district(district_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    nearby_accidents = d.get_nearby_accidents(0.5, district_id=district_id, start_date=start_datetime, end_date=end_datetime)
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[data.districtId == district_id]
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output)
+
+def get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output='json'):
     c = collections.Counter()
     for item in nearby_accidents:
         c.update([item.accident1_id])
         c.update([item.accident2_id])
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    data = data.loc[data.roadNumber == road_number]
     data['marker_size'] = data.apply(lambda x: c[x['id']], axis=1)
     data = data.loc[data.marker_size > 0]
     if len(data.index) == 0:#TODO
@@ -215,3 +225,7 @@ def get_accident_scatter_map(data, output, zoom, center):
 #e = e.replace(hour=23, minute=59, second=59, microsecond=999999)
 #get_map_with_most_frequent_accidents_for_road('D3', 20, s, e)
 #get_map_with_most_frequent_accidents_for_road2('D3', 20, None, None)
+#s = tim()
+#get_map_with_most_frequent_accidents_for_district(102, 20, None, None)
+#diff = tim() - s
+#print(str(diff) + 's')

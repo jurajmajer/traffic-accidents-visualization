@@ -84,6 +84,7 @@ def district_detail(district_id):
                            title='Prehľad dopravných nehôd pre okres ' + district_name,
                            page_title='Prehľad dopravných nehôd pre okres ' + district_name,
                            district_id = district_id,
+                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_district(district_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
                            detail_map=Markup(maps.get_district_detail_map(district_id, s, e)),
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e))
                            )
@@ -203,6 +204,12 @@ def get_map_choropleth_district():
 def get_map_choropleth_county():
     s, e = parse_datetimes()
     return set_date_cookie(Response(maps.get_county_choropleth(s, e, 'json'), mimetype='application/json'))
+
+@app.route('/api/map/district/frequent_accidents/<district_id>')
+def get_map_district_frequent_accidents(district_id):
+    district_id = int(district_id)
+    s, e = parse_datetimes()
+    return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_district(district_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json'))
 
 @app.route('/js/<path:path>')
 def send_js(path):
