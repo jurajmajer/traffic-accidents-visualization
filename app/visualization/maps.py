@@ -14,8 +14,7 @@ import pandas as pd
 import json
 import os
 from app.main import utils as u
-import collections
-#from timeit import default_timer as tim
+from timeit import default_timer as tim
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -92,74 +91,28 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
     )
     return plots.encode_plot(fig, output)
 
-def get_map_with_most_frequent_accidents_for_road_old(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
-    #SELECT * FROM `nearbyaccidents` n join trafficaccidents t1 on n.accident1_id=t1.id join trafficaccidents t2 on n.accident2_id=t2.id where distance < 0.5 and t1.roadNumber='D1' and t2.roadNumber = 'D1'
-    #SELECT id, overallStartTime, count(*) as cnt FROM `trafficaccidents` t join nearbyaccidents n on t.id=n.accident2_id where n.distance < 0.5 and roadNumber='D1' group by id, overallStartTime order by cnt desc limit 100
-    RADIUS = 0.5
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    data = data.loc[data.roadNumber == road_number]
-    temp = []
-    for i, row in data.iterrows():
-        temp.append([row['id'], row['longitude'], row['latitude']])
-    acc_nearby = calculate_accidents_nearby_for_road(temp, RADIUS)
-    data['marker_size'] = data.apply(lambda x: len(acc_nearby[x['id']]), axis=1)
-    acc_nearby = {k: v for k, v in sorted(acc_nearby.items(), key=lambda item: -1*len(item[1]))}
-    used = set()
-    retval = []
-    i = 0
-    for acc in acc_nearby.keys():
-        if i >= max_number_accidents_returned:
-            break
-        if acc in used:
-            continue
-        used = set.union(used, acc_nearby[acc])
-        retval.append(acc)
-        i += 1
-    data = data.loc[data['id'].isin(retval)]
-    data.sort_values(by='marker_size', inplace=True, ascending=False)
-    data['order'] = range(1,21)
-    minM = data['marker_size'].min()
-    maxM = data['marker_size'].max()
-    data['projected_marker_size'] = data.apply(lambda x: 5 + (x['marker_size']-minM) * 45 / (maxM-minM), axis=1)
-    
-    fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
-                  mapbox_style="open-street-map", size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
-                  opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
-                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Nehodový úsek v poradí'}, hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=8)
-    fig.update_layout(
-            margin={"r":0,"t":0,"l":0,"b":0},
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-    )
-    return plots.encode_plot(fig, output)
-
 def calculate_marker_size(x, minM, maxM):
     if minM == maxM:
         return 10
     return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
-    nearby_accidents = d.get_nearby_accidents(0.5, road_number=road_number, start_date=start_datetime, end_date=end_datetime)
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.roadNumber == road_number]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output)
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
+
+def get_map_with_most_frequent_accidents_for_county(county_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[data.countyId == county_id]
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
 
 def get_map_with_most_frequent_accidents_for_district(district_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
-    nearby_accidents = d.get_nearby_accidents(0.5, district_id=district_id, start_date=start_datetime, end_date=end_datetime)
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.districtId == district_id]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output)
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9, output)
 
-def get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_accidents, data, output='json'):
-    c = collections.Counter()
-    for item in nearby_accidents:
-        c.update([item.accident1_id])
-        c.update([item.accident2_id])
-    data['marker_size'] = data.apply(lambda x: c[x['id']], axis=1)
-    data = data.loc[data.marker_size > 0]
-    if len(data.index) == 0:#TODO
-        return
-    data.sort_values(by='marker_size', inplace=True, ascending=False)
+def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json'):
+    data=filter_nearby_accidents(data)
     temp = []
     retval = []
     for i, row in data.iterrows():
@@ -181,8 +134,10 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_a
     
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
                   mapbox_style='open-street-map', size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
-                  opacity=0.8, color='marker_size', color_continuous_scale='sunsetdark',
-                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=8)
+                  opacity=0.8, color='marker_size', color_continuous_scale='Bluered',
+                  labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, 
+                  hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=zoom,
+                  center = {'lat':data.iloc[0]['latitude'], 'lon':data.iloc[0]['longitude']})
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
@@ -190,23 +145,21 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, nearby_a
     )
     return plots.encode_plot(fig, output)
 
-def calculate_accidents_nearby_for_road(accidents, radius):
-    retval = {}
-    for i in range(len(accidents)):
-        this_accident = accidents[i]
-        if this_accident[0] not in retval:
-            retval[this_accident[0]] = set()
-        for j in range(len(accidents)):
-            if i >= j:
-                continue
-            a = accidents[j]
-            distance = u.haversine(this_accident[2], this_accident[1], a[2], a[1])
-            if distance < radius:
-                if a[0] not in retval:
-                    retval[a[0]] = set()
-                retval[this_accident[0]].add(a[0])
-                retval[a[0]].add(this_accident[0])
+def sum_values(a, b, idx):
+    retval = 0
+    if idx in a:
+        retval += a[idx]
+    if idx in b:
+        retval += b[idx]
     return retval
+
+def filter_nearby_accidents(data):
+    retval = d.get_nearby_accident()
+    retval = retval.loc[(retval['accident1_id'].isin(data['id'])) & (retval['accident2_id'].isin(data['id']))]
+    a = retval['accident1_id'].value_counts()
+    b = retval['accident2_id'].value_counts()
+    data['marker_size'] = data.apply(lambda x: sum_values(a, b, x['id']), axis=1)
+    return data.sort_values(by='marker_size', ascending=False)
     
 def get_accident_scatter_map(data, output, zoom, center):
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
@@ -226,6 +179,23 @@ def get_accident_scatter_map(data, output, zoom, center):
 #get_map_with_most_frequent_accidents_for_road('D3', 20, s, e)
 #get_map_with_most_frequent_accidents_for_road2('D3', 20, None, None)
 #s = tim()
+#df=d.get_nearby_accident()
+#print(len(df.index))
+#print(str(tim() - s) + 's')
+#s = tim()
 #get_map_with_most_frequent_accidents_for_district(102, 20, None, None)
-#diff = tim() - s
-#print(str(diff) + 's')
+#print(str(tim() - s) + 's')
+    
+#s = tim()
+#data = d.get_traffic_accident_by_date(None, None)
+#print(str(tim() - s) + 's')
+#s = tim()
+#data = data.loc[data.districtId == 102]
+#print(str(tim() - s) + 's')
+#s = tim()
+#data=filter_nearby_accidents(data)
+#print(str(tim() - s) + 's')
+#s = tim()
+#print(data)
+    
+#get_map_with_most_frequent_accidents_for_district(102, 20, None, None)

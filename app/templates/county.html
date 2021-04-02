@@ -32,14 +32,14 @@
 {% endblock %}
 
 {% block content %}
-    <div id="choropleth_map" style="height:600px;">
+    <div id="choropleth_map" style="height:600px;" class="figure-general">
 		<script>
 		  var data = {{choropleth_map}};
 		  Plotly.plot('choropleth_map', data, {});
 		</script>
 	</div>
 	
-	<div id="plot1" style="height:600px;">
+	<div id="plot1" class="figure-general">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});

@@ -5,7 +5,7 @@
         
 		function refreshAll()
 		{
-			refresh("/api/map/county_detail_map/{{county_id}}", "detail_map")
+			refresh("/api/map/county/frequent_accidents/{{county_id}}", "frequent_accidents_map")
 			refresh("/api/figure/accident_trend_in_county/{{county_id}}", "accident_trend_bar_plot")
 		}
 	
@@ -13,14 +13,17 @@
 {% endblock %}
 
 {% block content %}
-    <div id="detail_map" style="height:800px;">
+    <h2 class="w3-panel" style="margin-top:45px;">20 najnehodovejších úsekov pre {{county_name}} (<span id="frequent_accidents_map-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="frequent_accidents_map-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <p class="w3-panel">Do úvahy sa berie počet nehôd v okruhu 500 metrov.</p>
+    <div id="frequent_accidents_map" class="figure-general" style="height:800px;">
 		<script>
-		  var data = {{detail_map}};
-		  Plotly.plot('detail_map', data, {});
+		  var data = {{frequent_accidents_map}};
+		  Plotly.plot('frequent_accidents_map', data, {});
 		</script>
 	</div>
 	
-	<div id="accident_trend_bar_plot">
+	<h2 class="w3-panel" style="margin-top:45px;">Počet dopravných nehôd za deň pre {{county_name}} (<span id="accident_trend_bar_plot-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="accident_trend_bar_plot-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+	<div id="accident_trend_bar_plot" class="figure-general">
 		<script>
 		  var graphs = {{accident_trend_bar_plot}};
 		  Plotly.plot('accident_trend_bar_plot', graphs, {});

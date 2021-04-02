@@ -79,10 +79,10 @@ def get_nearby_accidents(max_distance, county_id=None, district_id=None, city_id
     return query.all()
 
 def get_traffic_accident():
-    cache_timestamp_key = 'get_traffic_accident_timestamp'
+    refresh_timestamp_key = 'get_traffic_accident_refresh_timestamp'
     cache_key = 'get_traffic_accident'
     
-    is_valid = is_data_valid(cache_timestamp_key, 86400)
+    is_valid = is_data_valid(refresh_timestamp_key)
     if is_valid:
         return cache.get(cache_key)
         
@@ -90,17 +90,34 @@ def get_traffic_accident():
     retval = pd.DataFrame(data=[[x.id, x.overallStartTime, x.sourceName, x.longitude, x.latitude, x.countyId, x.districtId, x.cityId, x.roadNumber] for x in items],
                         columns=['id', 'overallStartTime', 'sourceName', 'longitude', 'latitude', 'countyId', 'districtId', 'cityId', 'roadNumber'])
     cache.set(cache_key, retval)
-    cache.set(cache_timestamp_key, datetime.now())
+    refresh_timestamp = datetime.now() + relativedelta(days=1)
+    refresh_timestamp = refresh_timestamp.replace(hour=1, minute=0, second=0, microsecond=0)
+    cache.set(refresh_timestamp_key, refresh_timestamp)
     return retval
 
-def is_data_valid(cache_timestamp_key, timeout, must_be_same_day=True):
-    timestamp = cache.get(cache_timestamp_key)
-    if timestamp is None:
+def get_nearby_accident():
+    refresh_timestamp_key = 'get_nearby_accident_refresh_timestamp'
+    cache_key = 'get_nearby_accident'
+    
+    is_valid = is_data_valid(refresh_timestamp_key)
+    if is_valid:
+        return cache.get(cache_key)
+        
+    items = m.NearbyAccident.query.filter(m.NearbyAccident.distance<0.5).all()
+    retval = pd.DataFrame(data=[[x.id, x.accident1_id, x.accident2_id, x.distance] for x in items],
+                        columns=['id', 'accident1_id', 'accident2_id', 'distance'])
+    cache.set(cache_key, retval)
+    refresh_timestamp = datetime.now() + relativedelta(days=1)
+    refresh_timestamp = refresh_timestamp.replace(hour=1, minute=0, second=0, microsecond=0)
+    cache.set(refresh_timestamp_key, refresh_timestamp)
+    return retval
+
+def is_data_valid(refresh_timestamp_key):
+    refresh_timestamp = cache.get(refresh_timestamp_key)
+    if refresh_timestamp is None:
         return False
     now = datetime.now()
-    if must_be_same_day and now.date() > timestamp.date():
-        return False
-    limit = now - relativedelta(seconds=timeout)
-    if timestamp < limit:
+    if refresh_timestamp < now:
         return False
     return True
+    

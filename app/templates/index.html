@@ -10,11 +10,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="w3-panel">
-        <h2>Počet nehôd za deň na celom území SR (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
-    </div>
+    <h2 class="w3-panel">Počet nehôd za deň na celom území SR (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
     
-    <div id="plot1">
+    <div id="plot1" class="figure-general">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});
