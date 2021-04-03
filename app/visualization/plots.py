@@ -18,7 +18,7 @@ def get_plot_total_accident_trend(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
-    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň" + get_title_suffix(start_datetime, end_datetime))
+    fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
 
 def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'):
@@ -78,21 +78,25 @@ def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='jso
     data['count'] = data['count'].fillna(0)
     data.sort_values(by='count', inplace=True)
     
-    fig = px.bar(data, x='name', y='count', title="Absolútny počet nehôd podľa kraju" + get_title_suffix(start_datetime, end_datetime),
-                 custom_data=[data.index])
+    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
             tickvals = data['name'],
-            title_text = 'Kraj'
+            title_text = 'Kraj',
+            titlefont=dict(size=20),
         ),
+        height=600,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd'
+            title_text = 'Absolútny počet nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
         ),
         dragmode=False,
         margin={"r":0,"t":0,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
     )
     return encode_plot(fig, output)
 
@@ -105,21 +109,25 @@ def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='j
     data['count'] = data['count'].fillna(0)
     data.sort_values(by='count', inplace=True)
     
-    fig = px.bar(data, x='name', y='count', title="Absolútny počet nehôd podľa okresu" + get_title_suffix(start_datetime, end_datetime),
-                 custom_data=[data.index])
+    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
             tickvals = data['name'],
-            title_text = 'Okres'
+            title_text = 'Okres',
+            titlefont=dict(size=20),
         ),
+        height=600,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd'
+            title_text = 'Absolútny počet nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
         ),
         dragmode=False,
         margin={"r":0,"t":0,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
     )
     return encode_plot(fig, output)
 
@@ -156,7 +164,7 @@ def get_plot_accident_trend_in_county(county_id, start_datetime, end_datetime, o
     data = data.loc[data.countyId == county_id]['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
-    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň pre " + vu.get_county_name(county_id) + get_title_suffix(start_datetime, end_datetime))
+    fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
     
 def get_plot_accident_trend_in_district(district_id, start_datetime, end_datetime, output='json'):
@@ -164,7 +172,7 @@ def get_plot_accident_trend_in_district(district_id, start_datetime, end_datetim
     data = data.loc[data.districtId == district_id]['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
-    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň pre okres " + vu.get_district_name(district_id) + get_title_suffix(start_datetime, end_datetime))
+    fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
 
 def get_plot_accident_trend_on_road(road_number, start_datetime, end_datetime, output='json'):
@@ -172,7 +180,7 @@ def get_plot_accident_trend_on_road(road_number, start_datetime, end_datetime, o
     data = data.loc[data.roadNumber == road_number]['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
-    fig = get_plot_accident_trend(df, "Histogram nehôd - počet nehôd za deň pre cestnú komunikáciu " + road_number + get_title_suffix(start_datetime, end_datetime))
+    fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
 
 def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'):
@@ -205,7 +213,7 @@ def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
     add_zeroes_datetime(data, start_datetime.date(), end_datetime.date())
     return pd.DataFrame(dict(date=data.index, count=data.values))
 
-def get_plot_accident_trend(data, title):
+def get_plot_accident_trend(data):
     fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum'},)
     fig.update_layout(
         xaxis = dict(

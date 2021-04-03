@@ -39,8 +39,9 @@ def index():
     s, e = parse_datetimes(u.get_min_date(), u.get_max_date())
     tmpl = render_template('index.html', 
                            title='Štatistika dopravných nehôd v Slovenskej republike',
-                           page_title='Štatistika dopravných nehôd v Slovenskej republike',                           
-                           plot1=Markup(plots.get_plot_total_accident_trend(s, e, 'json')), 
+                           page_title='Štatistika dopravných nehôd v Slovenskej republike', 
+                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_country(MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
+                           accident_trend_bar_plot=Markup(plots.get_plot_total_accident_trend(s, e, 'json')), 
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('home')
                            )
@@ -67,7 +68,7 @@ def district():
                            title='Prehľad dopravných nehôd podľa okresov',
                            page_title='Prehľad dopravných nehôd podľa okresov',
                            choropleth_map=Markup(maps.get_district_choropleth(s, e)),
-                           plot1=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')),
+                           total_accidents_by_district_plot=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')),
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('district'),
                            )
@@ -99,7 +100,7 @@ def county():
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('county'),
                            choropleth_map=Markup(maps.get_county_choropleth(s, e)),
-                           plot1=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json'))
+                           total_accidents_by_county_plot=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json'))
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -217,6 +218,11 @@ def get_map_county_frequent_accidents(county_id):
     county_id = int(county_id)
     s, e = parse_datetimes()
     return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_county(county_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json'))
+
+@app.route('/api/map/country/frequent_accidents')
+def get_map_country_frequent_accidents():
+    s, e = parse_datetimes()
+    return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_country(MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json'))
 
 @app.route('/js/<path:path>')
 def send_js(path):

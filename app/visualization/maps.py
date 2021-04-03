@@ -44,8 +44,7 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
                            projection='sinusoidal', 
                            labels={'count':'Počet nehôd'},
                            hover_data={'district':False},
-                           hover_name=df['district'],
-                           title='Celkový počet nehôd podľa okresu')
+                           hover_name=df['district'])
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
@@ -65,23 +64,27 @@ def get_county_detail_map(county_id, start_datetime, end_datetime, output='json'
     return get_accident_scatter_map(data, output, 9, {'lat':center_lat, 'lon':center_lon})
 
 def get_county_choropleth(start_datetime, end_datetime, output='json'):
-    acc = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
-    acc = acc.value_counts()
-    data = d.get_county()
-    data['count'] = 0
-    data['count'] += acc
-    data['count'] = data['count'].fillna(0)
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
+    county_names = d.get_county()
+    data = data.value_counts()
+    data.index = data.index.map(lambda p: county_names.loc[p]['name'])
+    zeroes = pd.Series(data=0, index=county_names.name)
+    data = data + zeroes
+    data = data.fillna(0)
+    data = data.sort_values()
+    df = pd.DataFrame(dict(county=data.index, count=data.values))
+    print(df)
     
     geojson_file = os.path.join(os.path.dirname(__file__), 'regions_epsg_4326.geojson.txt')
     with open(geojson_file, encoding='utf-8') as file:
         geo_counties = json.loads(file.read())
-    fig = px.choropleth(data_frame=data, geojson=geo_counties, featureidkey='properties.IDN4', locations=data.index, color='count',
+    fig = px.choropleth(data_frame=df, geojson=geo_counties, featureidkey='properties.NM4', locations='county', color='count',
                            color_continuous_scale='tealrose',
-                           range_color=(0, data['count'].mean()*2),
+                           range_color=(0, df['count'].mean()*2),
                            projection='sinusoidal', 
-                           labels={'count':'Počet nehôd', 'index':'Kraj'},
-                           hover_name=data['name'],
-                           title='Celkový počet nehôd podľa kraju')
+                           labels={'count':'Počet nehôd'},
+                           hover_data={'county':False},
+                           hover_name=df['county'])
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
@@ -95,6 +98,10 @@ def calculate_marker_size(x, minM, maxM):
     if minM == maxM:
         return 10
     return 5 + (x['marker_size']-minM) * 45 / (maxM-minM)
+
+def get_map_with_most_frequent_accidents_for_country(max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 7.5, output, center = {'lat':48.663863, 'lon':19.502998})
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -111,7 +118,7 @@ def get_map_with_most_frequent_accidents_for_district(district_id, max_number_ac
     data = data.loc[data.districtId == district_id]
     return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9, output)
 
-def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json'):
+def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
     data=filter_nearby_accidents(data)
     temp = []
     retval = []
@@ -131,13 +138,15 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zo
     minM = data['marker_size'].min()
     maxM = data['marker_size'].max()
     data['projected_marker_size'] = data.apply(lambda x: calculate_marker_size(x, minM, maxM), axis=1)
+    if center is None:
+        center = {'lat':data.iloc[0]['latitude'], 'lon':data.iloc[0]['longitude']}
     
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
                   mapbox_style='open-street-map', size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
                   opacity=0.8, color='marker_size', color_continuous_scale='Bluered',
                   labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, 
                   hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=zoom,
-                  center = {'lat':data.iloc[0]['latitude'], 'lon':data.iloc[0]['longitude']})
+                  center = center)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
