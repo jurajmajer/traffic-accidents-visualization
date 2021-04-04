@@ -19,7 +19,7 @@
 				}
 			});
 			
-			var plotDiv = document.getElementById('plot1')
+			var plotDiv = document.getElementById('total_accidents_by_county_plot')
 			plotDiv.on('plotly_click', function(data){
 				if(data.points.length > 0)
 				{
@@ -33,6 +33,7 @@
 
 {% block content %}
     <h2 class="w3-panel" style="margin-top:45px;">Celkový počet nehôd podľa kraja (<span id="choropleth_map-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="choropleth_map-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <p class="w3-panel">Kliknite na kraj pre viac info</p>
     <div id="choropleth_map" style="height:600px;" class="figure-general">
 		<script>
 		  var data = {{choropleth_map}};
@@ -41,6 +42,7 @@
 	</div>
 	
 	<h2 class="w3-panel" style="margin-top:45px;">Absolútny počet nehôd podľa kraja (<span id="total_accidents_by_county_plot-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="total_accidents_by_county_plot-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+	<p class="w3-panel">Kliknite na kraj pre viac info</p>
 	<div id="total_accidents_by_county_plot" class="figure-general">
 		<script>
 		  var graphs = {{total_accidents_by_county_plot}};

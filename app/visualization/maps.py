@@ -73,7 +73,6 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
     data = data.fillna(0)
     data = data.sort_values()
     df = pd.DataFrame(dict(county=data.index, count=data.values))
-    print(df)
     
     geojson_file = os.path.join(os.path.dirname(__file__), 'regions_epsg_4326.geojson.txt')
     with open(geojson_file, encoding='utf-8') as file:
@@ -111,12 +110,12 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
 def get_map_with_most_frequent_accidents_for_county(county_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.countyId == county_id]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8.5, output)
 
 def get_map_with_most_frequent_accidents_for_district(district_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.districtId == district_id]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9, output)
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5, output)
 
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
     data=filter_nearby_accidents(data)

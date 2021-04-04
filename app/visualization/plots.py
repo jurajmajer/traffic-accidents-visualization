@@ -11,7 +11,6 @@ import pandas as pd
 import plotly.express as px
 
 from app.data import datasource as d
-from app.visualization import viz_utils as vu
 from dateutil.relativedelta import relativedelta
 
 def get_plot_total_accident_trend(start_datetime, end_datetime, output='json'):
@@ -21,51 +20,32 @@ def get_plot_total_accident_trend(start_datetime, end_datetime, output='json'):
     fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
 
-def get_plot_total_accidents_by_days(start_datetime, end_datetime, output='json'):
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
-    data = data.map(lambda p: p.date()).value_counts().sort_index()
-    df = pd.DataFrame(dict(date=data.index, count=data.values))
-    
-    fig = px.bar(df, x='date', y='count', title="Histogram nehôd - počet nehôd za deň" + get_title_suffix(start_datetime, end_datetime))
-    fig.update_layout(
-        xaxis = dict(
-            tickmode = 'array',
-            tickvals = df['date'],
-            ticktext = get_date_xtickslabels(df['date']),
-            title_text = 'Deň'
-        ),
-        yaxis = dict(
-            title_text = 'Počet nehôd'
-        ),
-        dragmode=False,
-        margin={"r":0,"t":0,"l":0,"b":0},
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-    )
-    
-    return encode_plot(fig, output)
-
 def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
     data = data.map(lambda p: p.date())
     data = data.map(lambda p: p.weekday()).value_counts().sort_index() / pd.Series(data.unique()).map(lambda p: p.weekday()).value_counts().sort_index()
     df = pd.DataFrame(dict(weekday=data.index, avg_count=data.values))
     
-    fig = px.bar(df, x='weekday', y='avg_count', title="Priemerný počet nehôd podľa dňa v týždni" + get_title_suffix(start_datetime, end_datetime))
+    fig = px.bar(df, x='weekday', y='avg_count', labels={'avg_count':'Priemerný počet nehôd'}, hover_data={'weekday':False},)
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
             tickvals = df['weekday'],
             ticktext = get_weekday_xtickslabels(df['weekday']),
-            title_text = 'Deň v týždni'
+            title_text = 'Deň v týždni',
+            titlefont=dict(size=20),
         ),
+        height=500,
         yaxis = dict(
-            title_text = 'Priemerný počet nehôd'
+            title_text = 'Priemerný počet nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
         ),
         dragmode=False,
         margin={"r":0,"t":0,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
     )
     return encode_plot(fig, output)
 
@@ -142,20 +122,55 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
     data = data.sort_values().tail(50)
     df = pd.DataFrame(dict(city=data.index, count=data.values))
     
-    fig = px.bar(df, x='city', y='count', title="Absolútny počet nehôd podľa obce (TOP 50)" + get_title_suffix(start_datetime, end_datetime))
+    fig = px.bar(df, x='city', y='count', labels={'count':'Počet nehôd'}, hover_data={'city':False},)
     fig.update_layout(
         xaxis = dict(
+            tickangle=90,
             tickmode = 'array',
             tickvals = df['city'],
-            title_text = 'Obec'
+            title_text = 'Obec',
+            titlefont=dict(size=20),
         ),
+        height=700,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd'
+            title_text = 'Absolútny počet nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
         ),
         dragmode=False,
         margin={"r":0,"t":0,"l":0,"b":0},
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
+    )
+    return encode_plot(fig, output)
+
+def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
+    total_count = data.size
+    data = data.map(lambda p: p.time().hour).value_counts().sort_index()
+    data = data * 100 / total_count
+    df = pd.DataFrame(dict(hour=data.index, pct=data.values))
+    
+    fig = px.bar(df, x='hour', y='pct', labels={'pct':'Percento nehôd'}, hover_data={'hour':False, 'pct':':.2f'},)
+    fig.update_layout(
+        xaxis = dict(
+            tickmode = 'array',
+            tickvals = df['hour'],
+            title_text = 'Hodina počas dňa',
+            titlefont=dict(size=20),
+        ),
+        height=500,
+        yaxis = dict(
+            title_text = 'Percento nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
+        ),
+        dragmode=False,
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
     )
     return encode_plot(fig, output)
 
@@ -181,30 +196,6 @@ def get_plot_accident_trend_on_road(road_number, start_datetime, end_datetime, o
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
     fig = get_plot_accident_trend(df)
-    return encode_plot(fig, output)
-
-def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'):
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
-    total_count = data.size
-    data = data.map(lambda p: p.time().hour).value_counts().sort_index()
-    data = data * 100 / total_count
-    df = pd.DataFrame(dict(hour=data.index, pct=data.values))
-    
-    fig = px.bar(df, x='hour', y='pct', title="Percento nehôd podľa hodiny v dni" + get_title_suffix(start_datetime, end_datetime))
-    fig.update_layout(
-        xaxis = dict(
-            tickmode = 'array',
-            tickvals = df['hour'],
-            title_text = 'Hodina počas dňa'
-        ),
-        yaxis = dict(
-            title_text = 'Percento nehôd'
-        ),
-        dragmode=False,
-        margin={"r":0,"t":0,"l":0,"b":0},
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-    )
     return encode_plot(fig, output)
 
 def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
@@ -245,35 +236,11 @@ def add_zeroes_datetime(df, s, e):
             df[c] = 0
         c += relativedelta(days=1)
 
-def get_title_suffix(start_datetime, end_datetime):
-    retval = " (" + start_datetime.strftime("%d/%m/%Y")
-    retval += " - "
-    retval += end_datetime.strftime("%d/%m/%Y") + ")"
-    return retval
-
-def get_date_xtickslabels(index, date_format='%d.%m.'):
-    return [x.strftime(date_format) + ' (' + get_short_week_day_name(x.weekday()) + ')' for x in index]
-
 def get_weekday_xtickslabels(index, format='long'):
     fnc = get_long_week_day_name
     if format != 'long':
         fnc = get_short_week_day_name
     return [fnc(x) for x in index]
-
-def get_min_max_colors(values, minc='lawngreen', maxc='gold', otherc='silver'):
-    retval = []
-    minimum = min(values)
-    maximum = max(values)
-    
-    for val in values:
-        c = otherc
-        if val == maximum:
-            c = maxc
-        elif val == minimum:
-            c = minc
-        retval.append(c)
-    
-    return retval
 
 def get_long_week_day_name(weekDayCode):
     if weekDayCode == 0: return 'Pondelok'

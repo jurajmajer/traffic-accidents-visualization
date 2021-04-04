@@ -12,21 +12,24 @@
 {% endblock %}
 
 {% block content %}
-    <div id="plot1">
+    <h2 class="w3-panel" style="margin-top:45px;">Priemerný počet nehôd podľa dňa v týždni (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <div id="plot1" class="figure-general">
 		<script>
 		  var graphs = {{plot1}};
 		  Plotly.plot('plot1', graphs, {});
 		</script>
 	</div>
 	
-	<div id="plot2">
+	<h2 class="w3-panel" style="margin-top:45px;">Percento nehôd podľa hodiny v dni (<span id="plot2-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot2-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+	<div id="plot2" class="figure-general">
 		<script>
 		  var graphs = {{plot2}};
 		  Plotly.plot('plot2', graphs, {});
 		</script>
 	</div>
 	
-	<div id="plot3">
+	<h2 class="w3-panel" style="margin-top:45px;">Absolútny počet nehôd podľa obce - TOP 50 (<span id="plot3-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot3-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+	<div id="plot3" class="figure-general">
 		<script>
 		  var graphs = {{plot3}};
 		  Plotly.plot('plot3', graphs, {});

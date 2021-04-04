@@ -51,8 +51,8 @@ def index():
 def stats():
     s, e = parse_datetimes()
     tmpl = render_template('stats.html', 
-                           title='Ďalšie štatistiky',
-                           page_title='Ďalšie štatistiky',                           
+                           title='Zaujímavé štatistiky',
+                           page_title='Zaujímavé štatistiky',                           
                            plot1=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')), 
                            plot2=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
                            plot3=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')),
