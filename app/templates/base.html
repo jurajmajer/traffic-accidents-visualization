@@ -35,7 +35,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <a href="/" class="w3-bar-item w3-button w3-padding{{nav_link_home_active}}"><i class="fa fa-users fa-fw"></i>&nbsp; Domov</a>
     <a href="/county" class="w3-bar-item w3-button w3-padding{{nav_link_county_active}}"><i class="fa fa-eye fa-fw"></i>&nbsp; Kraje</a>
     <a href="/district" class="w3-bar-item w3-button w3-padding{{nav_link_district_active}}"><i class="fa fa-users fa-fw"></i>&nbsp; Okresy</a>
-    <a href="/road" class="w3-bar-item w3-button w3-padding{{nav_link_road_active}}"><i class="fa fa-bullseye fa-fw"></i>&nbsp; Cestné komunikácie</a>
+    <a href="/road" class="w3-bar-item w3-button w3-padding{{nav_link_road_active}}"><i class="fa fa-bullseye fa-fw"></i>&nbsp; Cesty</a>
     <a href="/stats" class="w3-bar-item w3-button w3-padding{{nav_link_stats_active}}"><i class="fa fa-diamond fa-fw"></i>&nbsp; Štatistiky</a>
     <a href="/about" class="w3-bar-item w3-button w3-padding{{nav_link_about_active}}"><i class="fa fa-bell fa-fw"></i>&nbsp; O nás</a>
   </div>
@@ -51,15 +51,15 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <!-- Header -->
   <header class="w3-bar" style="padding-top:22px">
     <h1 class="w3-bar-item">{{page_title}}</h1>
-    <div class="w3-bar-item w3-right" style="font-size: 17px;">
+    <div class="w3-bar-item date-picker-main" style="font-size: 17px;">
       <form id="form1" action="#">
             <div class="w3-bar">
                 <div class="w3-bar-item" style="padding:0px">
         			<label for="s">Od:</label>
         			<input type="date" id="date-picker-start-id" name="s" value='{{start_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} />
             	</div>
-            	<div class="w3-bar-item date-picker-end-group" style="padding:0px">
-        			<label class="date-picker-end-label" for="e">Do:</label>
+            	<div class="w3-bar-item date-picker-end-group" style="padding:0px;">
+        			<label for="e">Do:</label>
         			<input type="date" id="date-picker-end-id" name="e" value='{{end_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} /><br/>
         		</div>
     		</div>
@@ -75,7 +75,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   
   {% block content %}{% endblock %}
   
-  <div class="w3-row-padding w3-margin-bottom" style="padding-top:45px">
+  <div class="w3-row-padding w3-margin-bottom" style="padding-top:135px">
     <div class="w3-quarter">
       <div class="w3-container w3-red w3-padding-16">
         <h3><a href="/county">Kraje</a></h3>
@@ -88,7 +88,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     </div>
     <div class="w3-quarter">
       <div class="w3-container w3-teal w3-padding-16">
-        <h3><a href="/road">Cestné komunikácie</a></h3>
+        <h3><a href="/road">Cesty</a></h3>
       </div>
     </div>
     <div class="w3-quarter">
