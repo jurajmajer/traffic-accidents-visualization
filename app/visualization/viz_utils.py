@@ -16,7 +16,7 @@ def get_county_name(county_id):
     return names.loc[county_id]['name']
 
 def get_county_id_for_district(district_id):
-    return district_id / 100;
+    return int(district_id / 100)
     
 def get_counties_in_groups(num_in_one_group):
     return form_groups(d.get_county(), 4)
