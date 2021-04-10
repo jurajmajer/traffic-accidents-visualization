@@ -100,7 +100,8 @@ def county():
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('county'),
                            choropleth_map=Markup(maps.get_county_choropleth(s, e)),
-                           total_accidents_by_county_plot=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json'))
+                           total_accidents_by_county_plot=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')),
+                           county_groups = vu.get_counties_in_groups(4)
                            )
     return set_date_cookie(make_response(tmpl))
 

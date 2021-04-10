@@ -100,7 +100,7 @@ def calculate_marker_size(x, minM, maxM):
 
 def get_map_with_most_frequent_accidents_for_country(max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 7.5, output, center = {'lat':48.663863, 'lon':19.502998})
+    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, output, center = {'lat':48.663863, 'lon':19.502998})
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -142,7 +142,7 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zo
     
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
                   mapbox_style='open-street-map', size='projected_marker_size', size_max=data['projected_marker_size'].max(), 
-                  opacity=0.8, color='marker_size', color_continuous_scale='Bluered',
+                  opacity=0.8, color='marker_size', color_continuous_scale=["blue", "red"],
                   labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, 
                   hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=zoom,
                   center = center)
@@ -150,6 +150,7 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zo
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
+            coloraxis_showscale=False,
     )
     return plots.encode_plot(fig, output)
 

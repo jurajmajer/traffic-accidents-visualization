@@ -61,8 +61,6 @@ def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='jso
     fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
     fig.update_layout(
         xaxis = dict(
-            tickmode = 'array',
-            tickvals = data['name'],
             title_text = 'Kraj',
             titlefont=dict(size=20),
         ),
@@ -92,8 +90,6 @@ def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='j
     fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
     fig.update_layout(
         xaxis = dict(
-            tickmode = 'array',
-            tickvals = data['name'],
             title_text = 'Okres',
             titlefont=dict(size=20),
         ),
@@ -125,9 +121,6 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
     fig = px.bar(df, x='city', y='count', labels={'count':'Počet nehôd'}, hover_data={'city':False},)
     fig.update_layout(
         xaxis = dict(
-            tickangle=90,
-            tickmode = 'array',
-            tickvals = df['city'],
             title_text = 'Obec',
             titlefont=dict(size=20),
         ),
