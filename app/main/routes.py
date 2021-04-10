@@ -71,6 +71,7 @@ def district():
                            total_accidents_by_district_plot=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')),
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('district'),
+                           district_groups=vu.get_districts_in_groups_by_county(4)
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -87,7 +88,8 @@ def district_detail(district_id):
                            district_name = district_name,
                            district_id = district_id,
                            frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_district(district_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e))
+                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e)),
+                           district_groups=vu.get_districts_in_groups(vu.get_county_id_for_district(district_id), 4)
                            )
     return set_date_cookie(make_response(tmpl))
     
@@ -101,7 +103,7 @@ def county():
                            **get_general_kwargs('county'),
                            choropleth_map=Markup(maps.get_county_choropleth(s, e)),
                            total_accidents_by_county_plot=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')),
-                           county_groups = vu.get_counties_in_groups(4)
+                           county_groups=vu.get_counties_in_groups(4)
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -118,7 +120,8 @@ def county_detail(county_id):
                            county_name = county_name,
                            county_id = county_id,
                            frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_county(county_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e))
+                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e)),
+                           district_groups=vu.get_districts_in_groups(county_id, 4)
                            )
     return set_date_cookie(make_response(tmpl))
     

@@ -29,4 +29,17 @@
 		  Plotly.plot('accident_trend_bar_plot', graphs, {});
 		</script>
 	</div>
+	
+	<h2 class="w3-panel" style="margin-top:45px;">Bližšie info o okresoch v rovnakom kraji:</h2>
+	{% for group in district_groups %}
+    	<div class="w3-row-padding detail-row-margin-bottom">
+        	{% for group_item in group %}
+            	<div class="w3-quarter detail-item">
+                  <div class="w3-container w3-lime w3-padding-16">
+                    <h3><a href="/district_detail/{{group_item[0]}}">{{group_item[1]}}</a></h3>
+                  </div>
+                </div>
+        	{% endfor %}
+    	</div>
+	{% endfor %}
 {% endblock %}

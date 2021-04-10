@@ -51,6 +51,7 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+            coloraxis_showscale=False,
     )
     return plots.encode_plot(fig, output)
 
@@ -90,6 +91,7 @@ def get_county_choropleth(start_datetime, end_datetime, output='json'):
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             geo=dict(bgcolor= 'rgba(0,0,0,0)'),
+            coloraxis_showscale=False,
     )
     return plots.encode_plot(fig, output)
 
