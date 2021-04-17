@@ -12,6 +12,7 @@ import plotly.express as px
 
 from app.data import datasource as d
 from dateutil.relativedelta import relativedelta
+import plotly.graph_objects as go
 
 def get_plot_total_accident_trend(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['overallStartTime']
@@ -253,6 +254,24 @@ def encode_plot(fig, output=None):
     if output == 'json':
         return fig.to_json()
     fig.show(renderer="browser")
+    
+def get_empty_plot(output=None):
+    fig = go.Figure()
+    fig.update_layout(
+        xaxis = dict(
+            visible = False,
+        ),
+        yaxis = dict(
+            visible = False,
+        ),
+    )
+    fig.add_annotation(
+        text="V danom čase sa nestala žiadna nehoda",
+        showarrow=False,
+        xref='paper',
+        yref='paper',
+        font=dict(size=30,))
+    return encode_plot(fig, output)
     
 #get_plot_total_accidents_by_county(output=None)
 #get_plot_total_accidents_by_weekdays()

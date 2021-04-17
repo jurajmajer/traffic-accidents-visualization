@@ -121,6 +121,8 @@ def get_map_with_most_frequent_accidents_for_district(district_id, max_number_ac
 
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
     data=filter_nearby_accidents(data)
+    if data is None:
+        return plots.get_empty_plot(output)
     temp = []
     retval = []
     for i, row in data.iterrows():
@@ -148,12 +150,14 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zo
                   labels={'marker_size':'Počet nehôd v danom období', 'order':'Poradie nehodového úseku'}, 
                   hover_data={'latitude':False, 'longitude':False, 'order':True, 'projected_marker_size':False}, zoom=zoom,
                   center = center)
+        
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             coloraxis_showscale=False,
     )
+    
     return plots.encode_plot(fig, output)
 
 def sum_values(a, b, idx):
@@ -167,6 +171,8 @@ def sum_values(a, b, idx):
 def filter_nearby_accidents(data):
     retval = d.get_nearby_accident()
     retval = retval.loc[(retval['accident1_id'].isin(data['id'])) & (retval['accident2_id'].isin(data['id']))]
+    if len(retval) == 0:
+        return None
     a = retval['accident1_id'].value_counts()
     b = retval['accident2_id'].value_counts()
     data['marker_size'] = data.apply(lambda x: sum_values(a, b, x['id']), axis=1)
