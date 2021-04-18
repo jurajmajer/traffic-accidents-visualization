@@ -166,6 +166,7 @@ def sum_values(a, b, idx):
         retval += a[idx]
     if idx in b:
         retval += b[idx]
+    retval += 1
     return retval
 
 def filter_nearby_accidents(data):
