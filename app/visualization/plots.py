@@ -199,6 +199,8 @@ def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
     return pd.DataFrame(dict(date=data.index, count=data.values))
 
 def get_plot_accident_trend(data):
+    if data['count'].sum() == 0:
+        return get_empty_plot()
     fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum'},)
     fig.update_layout(
         xaxis = dict(
@@ -255,7 +257,7 @@ def encode_plot(fig, output=None):
         return fig.to_json()
     fig.show(renderer="browser")
     
-def get_empty_plot(output=None):
+def get_empty_plot():
     fig = go.Figure()
     fig.update_layout(
         xaxis = dict(
@@ -264,6 +266,9 @@ def get_empty_plot(output=None):
         yaxis = dict(
             visible = False,
         ),
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
     )
     fig.add_annotation(
         text="V danom čase sa nestala žiadna nehoda",
@@ -271,7 +276,7 @@ def get_empty_plot(output=None):
         xref='paper',
         yref='paper',
         font=dict(size=30,))
-    return encode_plot(fig, output)
+    return fig
     
 #get_plot_total_accidents_by_county(output=None)
 #get_plot_total_accidents_by_weekdays()

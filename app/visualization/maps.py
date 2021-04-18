@@ -122,7 +122,7 @@ def get_map_with_most_frequent_accidents_for_district(district_id, max_number_ac
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
     data=filter_nearby_accidents(data)
     if data is None:
-        return plots.get_empty_plot(output)
+        return plots.encode_plot(plots.get_empty_plot(), output)
     temp = []
     retval = []
     for i, row in data.iterrows():
