@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block head %}
+	<script>
+		function refreshAll()
+		{
+			refresh("/api/figure/road/total_accident_by_road", "plot1")
+			refresh("/api/figure/road/total_accident_ratio_by_road", "plot2")
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+    <h2 class="w3-panel" style="margin-top:45px;">Absolútny počet nehôd podľa cesty - TOP 50 (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <div id="plot1" class="figure-general">
+		<script>
+		  var data = {{plot1}};
+		  Plotly.plot('plot1', data, {});
+		</script>
+	</div>
+	
+	<h2 class="w3-panel" style="margin-top:45px;">Počet nehôd na 1km podľa cesty - TOP 50 (<span id="plot2-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot2-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <div id="plot2" class="figure-general">
+		<script>
+		  var data = {{plot2}};
+		  Plotly.plot('plot2', data, {});
+		</script>
+	</div>
+	
+{% endblock %}

@@ -168,6 +168,66 @@ def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'
     )
     return encode_plot(fig, output)
 
+def get_plot_total_accidents_by_roads(start_datetime, end_datetime, max_records, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['roadNumber']
+    road = d.get_road()
+    road = road.loc[road.direction == 1]
+    data = pd.merge(data, road, left_on='roadNumber', right_on='number')
+    data = data['roadNumber'].value_counts()
+    data = data.sort_values().tail(max_records)
+    df = pd.DataFrame(dict(road=data.index, count=data.values))
+    
+    fig = px.bar(df, x='road', y='count', labels={'count':'Počet nehôd'}, hover_data={'road':False},)
+    fig.update_layout(
+        xaxis = dict(
+            title_text = 'Cesta',
+            titlefont=dict(size=20),
+            type='category',
+        ),
+        yaxis = dict(
+            title_text = 'Absolútny počet nehôd',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
+        ),
+        dragmode=False,
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
+    )
+    return encode_plot(fig, output)
+
+def get_plot_total_accidents_ratio_by_roads(start_datetime, end_datetime, max_records, output='json'):
+    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['roadNumber']
+    data = data.value_counts()
+    road = d.get_road()
+    road = road.loc[road.direction == 1]
+    data = pd.merge(data, road, left_index=True, right_on='number')
+    data.rename(columns = {'roadNumber': 'count'}, inplace = True)
+    data['shape_length'] = data['shape_length'] / 1000
+    data['ratio'] = data['count'] / data['shape_length']
+    data = data.sort_values(by='ratio').tail(max_records)
+    
+    fig = px.bar(data, x='number', y='ratio', labels={'ratio':'Počet nehôd na 1km', 'shape_length':'Dĺžka v km', 'count':'Počet nehôd'}, hover_data={'number':False, 'shape_length':True, 'count':True},)
+    fig.update_layout(
+        xaxis = dict(
+            title_text = 'Cesta',
+            titlefont=dict(size=20),
+            type='category',
+        ),
+        yaxis = dict(
+            title_text = 'Počet nehôd na 1km',
+            gridcolor='rgb(140,140,140)',
+            titlefont=dict(size=20),
+        ),
+        dragmode=False,
+        margin={"r":0,"t":0,"l":0,"b":0},
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=14,),
+    )
+    return encode_plot(fig, output)
+
 def get_plot_accident_trend_in_county(county_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.countyId == county_id]['overallStartTime']

@@ -55,3 +55,15 @@ class NearbyAccident(db.Model):
     def __repr__(self):
         return '<NearbyAccident {}, {}, {}>'.format(self.accident1_id, self.accident2_id, self.distance)
     
+class Road(db.Model):
+    __tablename__ = 'skroadnetwork'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String(16), nullable=True)
+    classification = db.Column(db.Integer, nullable=True)
+    direction = db.Column(db.Integer, nullable=True)
+    shape_length = db.Column(db.Integer, nullable=True)
+    
+    def __repr__(self):
+        return '<Road {}, {}, {}, {}>'.format(self.number, self.classification, self.direction, self.shape_length)
+    

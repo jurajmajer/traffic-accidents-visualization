@@ -125,6 +125,19 @@ def county_detail(county_id):
                            )
     return set_date_cookie(make_response(tmpl))
     
+@app.route('/road')
+def road():
+    s, e = parse_datetimes()
+    tmpl = render_template('road.html',
+                           title='Prehľad dopravných nehôd podľa ciest',
+                           page_title='Prehľad dopravných nehôd podľa ciest',
+                           **get_date_kwargs(s, e),
+                           **get_general_kwargs('road'),
+                           plot1=Markup(plots.get_plot_total_accidents_by_roads(s, e, 50, 'json')),
+                           plot2=Markup(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json'))
+                           )
+    return set_date_cookie(make_response(tmpl))
+
 @app.route('/road_detail/<road_number>')
 def road_detail(road_number):
     s, e = parse_datetimes()
@@ -183,6 +196,16 @@ def get_json_plot_accident_trend_in_district(district_id):
 def get_json_plot_accident_trend_on_road(road_number):
     s, e = parse_datetimes()
     return set_date_cookie(Response(plots.get_plot_accident_trend_on_road(road_number, s, e, 'json'), mimetype='application/json'))
+
+@app.route('/api/figure/road/total_accident_by_road')
+def get_json_plot_total_accidents_by_road():
+    s, e = parse_datetimes()
+    return set_date_cookie(Response(plots.get_plot_total_accidents_by_roads(s, e, 50, 'json'), mimetype='application/json'))
+
+@app.route('/api/figure/road/total_accident_ratio_by_road')
+def get_json_plot_total_accidents_ratio_by_road():
+    s, e = parse_datetimes()
+    return set_date_cookie(Response(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json'), mimetype='application/json'))
 
 @app.route('/api/map/district_detail_map/<district_id>')
 def get_map_district_detail(district_id):

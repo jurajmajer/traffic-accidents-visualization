@@ -42,6 +42,13 @@ def get_city():
     return pd.DataFrame(index=[x.id for x in items],
                         data=[[x.name] for x in items],
                         columns=['name'])
+
+@cache.cached(timeout=43200, key_prefix='get_road')
+def get_road():
+    items = m.Road.query.all()
+    return pd.DataFrame(index=[x.id for x in items],
+                        data=[[x.number, x.classification, x.direction, x.shape_length] for x in items],
+                        columns=['number', 'classification', 'direction', 'shape_length'])
     
 def get_nearby_accidents(max_distance, county_id=None, district_id=None, city_id=None, road_number=None, start_date=None, end_date=None):
     trafficAccident1 = aliased(m.TrafficAccident)
