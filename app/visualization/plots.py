@@ -173,6 +173,8 @@ def get_plot_total_accidents_by_roads(start_datetime, end_datetime, max_records,
     road = d.get_road()
     road = road.loc[road.direction == 1]
     data = pd.merge(data, road, left_on='roadNumber', right_on='number')
+    if len(data.index) == 0:
+        return encode_plot(get_empty_plot(), output)
     data = data['roadNumber'].value_counts()
     data = data.sort_values().tail(max_records)
     df = pd.DataFrame(dict(road=data.index, count=data.values))
@@ -203,6 +205,8 @@ def get_plot_total_accidents_ratio_by_roads(start_datetime, end_datetime, max_re
     road = d.get_road()
     road = road.loc[road.direction == 1]
     data = pd.merge(data, road, left_index=True, right_on='number')
+    if len(data.index) == 0:
+        return encode_plot(get_empty_plot(), output)
     data.rename(columns = {'roadNumber': 'count'}, inplace = True)
     data['shape_length'] = data['shape_length'] / 1000
     data['ratio'] = data['count'] / data['shape_length']

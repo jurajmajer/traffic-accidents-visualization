@@ -50,6 +50,12 @@ def get_road():
                         data=[[x.number, x.classification, x.direction, x.shape_length] for x in items],
                         columns=['number', 'classification', 'direction', 'shape_length'])
     
+def get_road_shape(road_number):
+    retval = m.Road.query.filter(m.Road.number == road_number).filter(m.Road.direction == 1).all()
+    if len(retval) == 1:
+        return retval[0].shape
+    return None
+    
 def get_nearby_accidents(max_distance, county_id=None, district_id=None, city_id=None, road_number=None, start_date=None, end_date=None):
     trafficAccident1 = aliased(m.TrafficAccident)
     trafficAccident2 = aliased(m.TrafficAccident)

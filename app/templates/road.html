@@ -27,4 +27,14 @@
 		</script>
 	</div>
 	
+	<h2 class="w3-panel" style="margin-top:45px;">Zoznam všetkých ciest</h2>
+	{% for road in road_list %}
+    	<h3 class="w3-panel" style="margin-top:25px;">{{road[0]}}:</h3>
+        	<div class="w3-panel">
+        	{% for item in road[1] %}
+            	<a class="road-list-item" href="/road_detail/{{item}}">{{item}}</a>
+        	{% endfor %}
+        	</div>
+	{% endfor %}
+	
 {% endblock %}

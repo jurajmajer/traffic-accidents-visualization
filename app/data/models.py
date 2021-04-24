@@ -63,6 +63,7 @@ class Road(db.Model):
     classification = db.Column(db.Integer, nullable=True)
     direction = db.Column(db.Integer, nullable=True)
     shape_length = db.Column(db.Integer, nullable=True)
+    shape = db.Column(db.String(100000), nullable=True)
     
     def __repr__(self):
         return '<Road {}, {}, {}, {}>'.format(self.number, self.classification, self.direction, self.shape_length)

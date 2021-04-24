@@ -6,6 +6,7 @@ Created on Sat Feb  6 21:35:32 2021
 """
 
 from app.data import datasource as d
+import re
 
 def get_district_name(district_id):
     names = d.get_district()
@@ -47,4 +48,33 @@ def form_groups(df, num_in_one_group):
         temp += 1
     if temp > 0:
         retval.append(group)
+    return retval
+
+def key_func(e):
+    e = re.sub('\D', '', e)
+    return int(e)
+
+def get_roads_by_classification(classification):
+    retval = d.get_road()
+    retval = retval.loc[retval.direction == 1]
+    retval = retval[retval['classification'].isin(classification)]
+    retval = retval['number'].tolist()
+    retval.sort(key=key_func)
+    return retval
+
+def get_all_roads_list():
+    retval = []
+    highways = []
+    speedways = []
+    temp = get_roads_by_classification([0,6])
+    for t in temp:
+        if t.startswith('R'):
+            speedways.append(t)
+        else:
+            highways.append(t)
+    retval.append(['Diaľnice a diaľničné privádzače', highways])
+    retval.append(['Rýchlostné cesty', speedways])
+    retval.append(['Cesty I. triedy', get_roads_by_classification([1])])
+    retval.append(['Cesty II. triedy', get_roads_by_classification([2])])
+    retval.append(['Cesty III. triedy', get_roads_by_classification([3])])
     return retval

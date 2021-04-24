@@ -134,7 +134,8 @@ def road():
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('road'),
                            plot1=Markup(plots.get_plot_total_accidents_by_roads(s, e, 50, 'json')),
-                           plot2=Markup(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json'))
+                           plot2=Markup(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json')),
+                           road_list=vu.get_all_roads_list()
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -142,11 +143,13 @@ def road():
 def road_detail(road_number):
     s, e = parse_datetimes()
     tmpl = render_template('road_detail.html',
+                           title='Prehľad dopravných nehôd pre cestu ' + road_number,
+                           page_title='Prehľad dopravných nehôd pre cestu ' + road_number,
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
                            road_number = road_number,
-                           detail_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
+                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
+                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
                            )
     return set_date_cookie(make_response(tmpl))
     

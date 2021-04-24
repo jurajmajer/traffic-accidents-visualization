@@ -15,6 +15,7 @@ import json
 import os
 from app.main import utils as u
 from timeit import default_timer as tim
+import plotly.graph_objects as go
 
 def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
@@ -102,22 +103,33 @@ def calculate_marker_size(x, minM, maxM):
 
 def get_map_with_most_frequent_accidents_for_country(max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, output, center = {'lat':48.663863, 'lon':19.502998})
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, output, center = {'lat':48.663863, 'lon':19.502998})
+    return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.roadNumber == road_number]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
+    shape = d.get_road_shape(road_number)
+    if shape is not None:
+        lat, lon = parse_shape_string(shape)
+        fig.add_trace(go.Scattermapbox(
+            mode = "lines",
+            lon = lon,
+            lat = lat))
+    return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_county(county_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.countyId == county_id]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8.5, output)
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8.5, output)
+    return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_district(district_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.districtId == district_id]
-    return get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5, output)
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5, output)
+    return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
     data=filter_nearby_accidents(data)
@@ -158,7 +170,7 @@ def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zo
             coloraxis_showscale=False,
     )
     
-    return plots.encode_plot(fig, output)
+    return fig
 
 def sum_values(a, b, idx):
     retval = 0
@@ -189,6 +201,30 @@ def get_accident_scatter_map(data, output, zoom, center):
             plot_bgcolor='rgba(0,0,0,0)',
     )
     return plots.encode_plot(fig, output)
+
+def parse_shape_string(shape_string):
+    if shape_string.startswith('['):
+        shape_string = shape_string[1:-1]
+        shape_string = shape_string.replace('\'', '')
+        lat = []
+        lon = []
+        for x in shape_string.split(','):
+            l1, l2 = parse_line_string(x)
+            lat.extend(l1)
+            lon.extend(l2)
+        return lat, lon
+    
+    return parse_line_string(shape_string)
+
+def parse_line_string(line_string):
+    line_string = line_string.strip()
+    parts = line_string.split()
+    lat = []
+    lon = []
+    for i in range(0, int(len(parts)/2)):
+        lat.append(float(parts[2*i]))
+        lon.append(float(parts[2*i+1]))
+    return lat, lon
     
 #s = datetime.strptime('2021-01-06', '%Y-%m-%d')
 #s = s.replace(hour=0, minute=0, second=0, microsecond=0)
