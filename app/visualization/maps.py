@@ -112,11 +112,15 @@ def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accide
     fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
     shape = d.get_road_shape(road_number)
     if shape is not None:
-        lat, lon = parse_shape_string(shape)
-        fig.add_trace(go.Scattermapbox(
-            mode = "lines",
-            lon = lon,
-            lat = lat))
+        shape_list = parse_shape_string(shape)
+        for s in shape_list:
+            fig.add_trace(go.Scattermapbox(
+                mode = "lines",
+                line=dict(width=4, color="#006699"),
+                showlegend=False,
+                lon = s[1],
+                lat = s[0],
+                hoverinfo='skip'))
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_county(county_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
@@ -203,18 +207,15 @@ def get_accident_scatter_map(data, output, zoom, center):
     return plots.encode_plot(fig, output)
 
 def parse_shape_string(shape_string):
+    retval = []
     if shape_string.startswith('['):
         shape_string = shape_string[1:-1]
         shape_string = shape_string.replace('\'', '')
-        lat = []
-        lon = []
         for x in shape_string.split(','):
-            l1, l2 = parse_line_string(x)
-            lat.extend(l1)
-            lon.extend(l2)
-        return lat, lon
-    
-    return parse_line_string(shape_string)
+            retval.append(parse_line_string(x))
+    else:
+        retval.append(parse_line_string(shape_string))
+    return retval
 
 def parse_line_string(line_string):
     line_string = line_string.strip()
@@ -224,7 +225,7 @@ def parse_line_string(line_string):
     for i in range(0, int(len(parts)/2)):
         lat.append(float(parts[2*i]))
         lon.append(float(parts[2*i+1]))
-    return lat, lon
+    return [lat, lon]
     
 #s = datetime.strptime('2021-01-06', '%Y-%m-%d')
 #s = s.replace(hour=0, minute=0, second=0, microsecond=0)

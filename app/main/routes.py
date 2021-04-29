@@ -142,9 +142,10 @@ def road():
 @app.route('/road_detail/<road_number>')
 def road_detail(road_number):
     s, e = parse_datetimes()
+    road = vu.get_road(road_number)
     tmpl = render_template('road_detail.html',
                            title='Prehľad dopravných nehôd pre cestu ' + road_number,
-                           page_title='Prehľad dopravných nehôd pre cestu ' + road_number,
+                           page_title='Prehľad dopravných nehôd pre cestu ' + road_number + ' (' + str(round(road.shape_length/1000, 2)).replace('.',',') + ' km)',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
                            road_number = road_number,

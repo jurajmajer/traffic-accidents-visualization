@@ -78,3 +78,10 @@ def get_all_roads_list():
     retval.append(['Cesty II. triedy', get_roads_by_classification([2])])
     retval.append(['Cesty III. triedy', get_roads_by_classification([3])])
     return retval
+
+def get_road(road_number):
+    retval = d.get_road()
+    retval = retval.loc[retval.direction == 1]
+    retval = retval.loc[retval.number == road_number]
+    return retval.iloc[0]
+    
