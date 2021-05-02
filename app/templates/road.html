@@ -32,7 +32,7 @@
     	<h3 class="w3-panel" style="margin-top:25px;">{{road[0]}}:</h3>
         	<div class="w3-panel">
         	{% for item in road[1] %}
-            	<a class="road-list-item" href="/road_detail/{{item}}">{{item}}</a>
+            	<a class="w3-button w3-indigo w3-round-large road-list-item" href="/road_detail/{{item}}"><b>{{item}}</b></a>
         	{% endfor %}
         	</div>
 	{% endfor %}

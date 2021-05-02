@@ -103,42 +103,43 @@ def calculate_marker_size(x, minM, maxM):
 
 def get_map_with_most_frequent_accidents_for_country(max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, output, center = {'lat':48.663863, 'lon':19.502998})
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, center = {'lat':48.663863, 'lon':19.502998})
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.roadNumber == road_number]
-    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8, output)
-    shape = d.get_road_shape(road_number)
-    if shape is not None:
-        shape_list = parse_shape_string(shape)
-        for s in shape_list:
-            fig.add_trace(go.Scattermapbox(
-                mode = "lines",
-                line=dict(width=4, color="#006699"),
-                showlegend=False,
-                lon = s[1],
-                lat = s[0],
-                hoverinfo='skip'))
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8)
+    if data.size > 0:
+        shape = d.get_road_shape(road_number)
+        if shape is not None:
+            shape_list = parse_shape_string(shape)
+            for s in shape_list:
+                fig.add_trace(go.Scattermapbox(
+                    mode = 'lines',
+                    line=dict(width=4, color="#006699"),
+                    showlegend=False,
+                    lon = s[1],
+                    lat = s[0],
+                    hoverinfo='skip'))
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_county(county_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.countyId == county_id]
-    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8.5, output)
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8.5)
     return plots.encode_plot(fig, output)
 
 def get_map_with_most_frequent_accidents_for_district(district_id, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.districtId == district_id]
-    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5, output)
+    fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5)
     return plots.encode_plot(fig, output)
 
-def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, output='json', center=None):
+def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, center=None):
     data=filter_nearby_accidents(data)
     if data is None:
-        return plots.encode_plot(plots.get_empty_plot(), output)
+        return plots.get_empty_plot()
     temp = []
     retval = []
     for i, row in data.iterrows():

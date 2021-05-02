@@ -59,7 +59,7 @@ def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='jso
     data['count'] = data['count'].fillna(0)
     data.sort_values(by='count', inplace=True)
     
-    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
+    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd', 'name':'Kraj'},)
     fig.update_layout(
         xaxis = dict(
             title_text = 'Kraj',
@@ -88,7 +88,7 @@ def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='j
     data['count'] = data['count'].fillna(0)
     data.sort_values(by='count', inplace=True)
     
-    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd'}, hover_data={'name':False},)
+    fig = px.bar(data, x='name', y='count', custom_data=[data.index], labels={'count':'Počet nehôd', 'name':'Okres'},)
     fig.update_layout(
         xaxis = dict(
             title_text = 'Okres',
@@ -119,7 +119,7 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
     data = data.sort_values().tail(50)
     df = pd.DataFrame(dict(city=data.index, count=data.values))
     
-    fig = px.bar(df, x='city', y='count', labels={'count':'Počet nehôd'}, hover_data={'city':False},)
+    fig = px.bar(df, x='city', y='count', labels={'count':'Počet nehôd', 'city':'Obec'},)
     fig.update_layout(
         xaxis = dict(
             title_text = 'Obec',
@@ -179,7 +179,7 @@ def get_plot_total_accidents_by_roads(start_datetime, end_datetime, max_records,
     data = data.sort_values().tail(max_records)
     df = pd.DataFrame(dict(road=data.index, count=data.values))
     
-    fig = px.bar(df, x='road', y='count', labels={'count':'Počet nehôd'}, hover_data={'road':False},)
+    fig = px.bar(df, x='road', y='count', labels={'count':'Počet nehôd', 'road':'Cesta'},)
     fig.update_layout(
         xaxis = dict(
             title_text = 'Cesta',
@@ -212,7 +212,7 @@ def get_plot_total_accidents_ratio_by_roads(start_datetime, end_datetime, max_re
     data['ratio'] = data['count'] / data['shape_length']
     data = data.sort_values(by='ratio').tail(max_records)
     
-    fig = px.bar(data, x='number', y='ratio', labels={'ratio':'Počet nehôd na 1km', 'shape_length':'Dĺžka v km', 'count':'Počet nehôd'}, hover_data={'number':False, 'shape_length':True, 'count':True},)
+    fig = px.bar(data, x='number', y='ratio', labels={'ratio':'Počet nehôd na 1km', 'shape_length':'Dĺžka v km', 'count':'Počet nehôd', 'number':'Cesta'}, hover_data={'shape_length':True, 'count':True},)
     fig.update_layout(
         xaxis = dict(
             title_text = 'Cesta',
@@ -265,7 +265,8 @@ def prepare_data_for_trend_plot(data, start_datetime, end_datetime):
 def get_plot_accident_trend(data):
     if data['count'].sum() == 0:
         return get_empty_plot()
-    fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum'},)
+    data['weekday'] = data['date'].apply(get_weekday)
+    fig = px.bar(data, x='date', y='count', labels={'count':'Počet nehôd', 'date':'Dátum', 'weekday':'Deň v týždni'}, hover_data={'weekday':True},)
     fig.update_layout(
         xaxis = dict(
             #tickangle=-30,
@@ -295,12 +296,18 @@ def add_zeroes_datetime(df, s, e):
         if c not in df:
             df[c] = 0
         c += relativedelta(days=1)
-
+        
 def get_weekday_xtickslabels(index, format='long'):
     fnc = get_long_week_day_name
     if format != 'long':
         fnc = get_short_week_day_name
     return [fnc(x) for x in index]
+
+def get_weekday(date, format='long'):
+    fnc = get_long_week_day_name
+    if format != 'long':
+        fnc = get_short_week_day_name
+    return fnc(date.weekday())
 
 def get_long_week_day_name(weekDayCode):
     if weekDayCode == 0: return 'Pondelok'

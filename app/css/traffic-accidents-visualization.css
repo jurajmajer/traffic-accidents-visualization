@@ -4,7 +4,7 @@
 
 .detail-row-margin-bottom { margin-bottom:16px; }
 
-.road-list-item { margin-right:5px; }
+.road-list-item { margin-top:8px; margin-right:5px; width:65px; }
 
 @media screen and (max-width: 420px) { 
 	.date-picker-end-group { margin-left:0px; margin-top:20px; }
