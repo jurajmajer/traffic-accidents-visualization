@@ -189,10 +189,11 @@ def sum_values(a, b, idx):
 def filter_nearby_accidents(data):
     retval = d.get_nearby_accident()
     retval = retval.loc[(retval['accident1_id'].isin(data['id'])) & (retval['accident2_id'].isin(data['id']))]
-    if len(retval) == 0:
-        return None
-    a = retval['accident1_id'].value_counts()
-    b = retval['accident2_id'].value_counts()
+    a = []
+    b = []
+    if len(retval) > 0:
+        a = retval['accident1_id'].value_counts()
+        b = retval['accident2_id'].value_counts()
     data['marker_size'] = data.apply(lambda x: sum_values(a, b, x['id']), axis=1)
     return data.sort_values(by='marker_size', ascending=False)
     
