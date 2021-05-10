@@ -51,52 +51,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <!-- Header -->
   <header class="w3-bar" style="padding-top:22px">
     <h1 class="w3-bar-item">{{page_title}}</h1>
-    <div class="w3-bar-item date-picker-main" style="font-size: 17px;">
-      <form id="form1" action="#">
-            <div class="w3-bar">
-                <div class="w3-bar-item" style="padding:0px">
-        			<label for="s">Od:</label>
-        			<input type="date" id="date-picker-start-id" name="s" value='{{start_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} />
-            	</div>
-            	<div class="w3-bar-item date-picker-end-group" style="padding:0px;">
-        			<label for="e">Do:</label>
-        			<input type="date" id="date-picker-end-id" name="e" value='{{end_date.strftime("%Y-%m-%d")}}' min={{ min_date }} max={{ max_date }} /><br/>
-        		</div>
-    		</div>
-			<div style="margin-top:10px;">
-    			<a style="margin-right:20px;" href="#" id="date-picker-quick-week-id" style="date-picker-quick-item">týždeň</a>
-    			<a style="margin-right:20px;" href="#" id="date-picker-quick-month-id" style="date-picker-quick-item">mesiac</a>
-    			<a style="margin-right:20px;" href="#" id="date-picker-quick-year-id" style="date-picker-quick-item">rok</a>
-    			<a style="margin-right:20px;" href="#" id="date-picker-quick-total-id" style="date-picker-quick-item">celkovo</a>
-			</div>
-        </form>
-    </div>
+    {% block date_picker %}{% endblock %}
   </header>
   
   {% block content %}{% endblock %}
   
-  <div class="w3-row-padding w3-margin-bottom" style="padding-top:61px">
-    <div class="w3-quarter detail-item">
-      <div class="w3-container w3-red w3-padding-16">
-        <h3><a href="/county">Kraje</a></h3>
-      </div>
-    </div>
-    <div class="w3-quarter detail-item">
-      <div class="w3-container w3-blue w3-padding-16">
-        <h3><a href="/district">Okresy</a></h3>
-      </div>
-    </div>
-    <div class="w3-quarter detail-item">
-      <div class="w3-container w3-teal w3-padding-16">
-        <h3><a href="/road">Cesty</a></h3>
-      </div>
-    </div>
-    <div class="w3-quarter detail-item">
-      <div class="w3-container w3-orange w3-text-white w3-padding-16">
-        <h3><a href="/stats">Štatistiky</a></h3>
-      </div>
-    </div>
-  </div>
+  {% block content_trailer %}{% endblock %}
 
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-light-grey" style="margin-top:45px;">

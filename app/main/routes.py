@@ -153,6 +153,15 @@ def road_detail(road_number):
                            accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
                            )
     return set_date_cookie(make_response(tmpl))
+
+@app.route('/about')
+def about():
+    tmpl = render_template('about.html',
+                           title='O nás',
+                           page_title='O nás',
+                           **get_general_kwargs('about'),
+                           )
+    return make_response(tmpl)
     
 @app.route('/api/figure/total_accident_trend')
 def get_json_plot_total_accidents_by_days():
