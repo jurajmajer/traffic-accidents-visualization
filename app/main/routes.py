@@ -272,6 +272,10 @@ def send_js(path):
 def send_css(path):
     return send_from_directory('css', path)
 
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
 def get_general_kwargs(navlink_active):
     retval = {
                 'current_year': datetime.now().year
