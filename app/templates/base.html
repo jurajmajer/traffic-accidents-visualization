@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+<head>
 <title>{{title}}</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -10,7 +12,7 @@
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-1.58.4.min.js"></script>
 <script src="/js/plotly-locale-sk.js"></script>
 <script>
     Plotly.setPlotConfig({locale: 'sk'})
@@ -20,24 +22,25 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/js/date-picker.js"></script>
 {% block head %}{% endblock %}
+</head>
 <body class="w3-light-grey">
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
   <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i> &nbsp;Menu</button>
-  <span class="w3-bar-item w3-right">Logo</span>
+  <span class="w3-bar-item w3-right">Štatistika dopravných nehôd na území Slovenskej republiky</span>
 </div>
 
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar">
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;font-size:20px;" id="mySidebar">
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>&nbsp; Close Menu</a>
-    <a href="/" class="w3-bar-item w3-button w3-padding{{nav_link_home_active}}"><i class="fa fa-users fa-fw"></i>&nbsp; Domov</a>
-    <a href="/county" class="w3-bar-item w3-button w3-padding{{nav_link_county_active}}"><i class="fa fa-eye fa-fw"></i>&nbsp; Kraje</a>
-    <a href="/district" class="w3-bar-item w3-button w3-padding{{nav_link_district_active}}"><i class="fa fa-users fa-fw"></i>&nbsp; Okresy</a>
-    <a href="/road" class="w3-bar-item w3-button w3-padding{{nav_link_road_active}}"><i class="fa fa-bullseye fa-fw"></i>&nbsp; Cesty</a>
-    <a href="/stats" class="w3-bar-item w3-button w3-padding{{nav_link_stats_active}}"><i class="fa fa-diamond fa-fw"></i>&nbsp; Štatistiky</a>
-    <a href="/about" class="w3-bar-item w3-button w3-padding{{nav_link_about_active}}"><i class="fa fa-bell fa-fw"></i>&nbsp; O nás</a>
+    <a href="/" class="w3-bar-item w3-button w3-padding{{nav_link_home_active}}"><i class="fa fa-home fa-fw"></i>&nbsp; Domov</a>
+    <a href="/county" class="w3-bar-item w3-button w3-padding{{nav_link_county_active}}"><i class="fa fa-bar-chart fa-fw"></i>&nbsp; Kraje</a>
+    <a href="/district" class="w3-bar-item w3-button w3-padding{{nav_link_district_active}}"><i class="fa fa-line-chart fa-fw"></i>&nbsp; Okresy</a>
+    <a href="/road" class="w3-bar-item w3-button w3-padding{{nav_link_road_active}}"><i class="fa fa-road fa-fw"></i>&nbsp; Cesty</a>
+    <a href="/stats" class="w3-bar-item w3-button w3-padding{{nav_link_stats_active}}"><i class="fa fa-pie-chart fa-fw"></i>&nbsp; Štatistiky</a>
+    <a href="/about" class="w3-bar-item w3-button w3-padding{{nav_link_about_active}}"><i class="fa fa-thumbs-up fa-fw"></i>&nbsp; O nás</a>
   </div>
 </nav>
 
@@ -60,7 +63,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
   <!-- Footer -->
   <footer class="w3-container w3-padding-16 w3-light-grey" style="margin-top:45px;">
-    <h4>Štatistika dopravných nehôd na území Slovenskej republiky</h4>
 	<p>© Copyright {{current_year}} | <a href="https://www.kayaposoft.com/" target="_blank">Kayapo, s.r.o.</a></p>
   </footer>
 

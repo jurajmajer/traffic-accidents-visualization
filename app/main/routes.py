@@ -276,6 +276,10 @@ def send_css(path):
 def send_static(path):
     return send_from_directory('static', path)
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('static', 'favicon.ico')
+
 def get_general_kwargs(navlink_active):
     retval = {
                 'current_year': datetime.now().year
