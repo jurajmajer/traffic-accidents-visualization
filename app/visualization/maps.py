@@ -187,6 +187,8 @@ def sum_values(a, b, idx):
     return retval
 
 def filter_nearby_accidents(data):
+    if len(data.index) == 0:
+        return None
     retval = d.get_nearby_accident()
     retval = retval.loc[(retval['accident1_id'].isin(data['id'])) & (retval['accident2_id'].isin(data['id']))]
     a = []

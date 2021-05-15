@@ -36,7 +36,7 @@ def after_request(response):
 @app.route('/')
 @app.route('/index')
 def index():
-    s, e = parse_datetimes(u.get_min_date(), u.get_max_date())
+    s, e = parse_datetimes()
     tmpl = render_template('index.html', 
                            title='Štatistika dopravných nehôd v Slovenskej republike',
                            page_title='Štatistika dopravných nehôd v Slovenskej republike', 
@@ -51,8 +51,8 @@ def index():
 def stats():
     s, e = parse_datetimes()
     tmpl = render_template('stats.html', 
-                           title='Zaujímavé štatistiky',
-                           page_title='Zaujímavé štatistiky',                           
+                           title='Ostatné štatistiky',
+                           page_title='Ostatné štatistiky',                           
                            plot1=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')), 
                            plot2=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
                            plot3=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')),
@@ -297,13 +297,10 @@ def get_date_kwargs(s, e):
               }
     return retval
 
-def parse_datetimes(default_start=None, default_end=None):
+def parse_datetimes():
     s = None
     e = None
     s, e = parse_datetimes_from_query_string()
-    if s is None and e is None:
-        s = default_start
-        e = default_end
     if s is None and e is None:
         s, e = parse_datetimes_from_cookie()
     if s is not None and e is not None and s > e:
@@ -318,8 +315,7 @@ def parse_datetimes(default_start=None, default_end=None):
     if e is None:
         e = u.get_max_date()
     if s is None:
-        s = e - relativedelta(days=30)
-        s = s.replace(hour=0, minute=0, second=0, microsecond=0)
+        s = max(e.now() - relativedelta(days=365), u.get_min_date())
     return s, e
 
 def get_datetime_from_string(string, round_up):
