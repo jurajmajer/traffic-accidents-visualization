@@ -102,10 +102,10 @@ def get_traffic_accident():
     items = m.TrafficAccident.query.all()
     retval = pd.DataFrame(data=[[x.id, x.overallStartTime, x.sourceName, x.longitude, x.latitude, x.countyId, x.districtId, x.cityId, x.roadNumber] for x in items],
                         columns=['id', 'overallStartTime', 'sourceName', 'longitude', 'latitude', 'countyId', 'districtId', 'cityId', 'roadNumber'])
-    cache.set(cache_key, retval)
+    cache.set(cache_key, retval, timeout=0)
     refresh_timestamp = datetime.now() + relativedelta(days=1)
     refresh_timestamp = refresh_timestamp.replace(hour=1, minute=0, second=0, microsecond=0)
-    cache.set(refresh_timestamp_key, refresh_timestamp)
+    cache.set(refresh_timestamp_key, refresh_timestamp, timeout=0)
     return retval
 
 def get_nearby_accident():
@@ -119,10 +119,10 @@ def get_nearby_accident():
     items = m.NearbyAccident.query.filter(m.NearbyAccident.distance<0.5).all()
     retval = pd.DataFrame(data=[[x.id, x.accident1_id, x.accident2_id, x.distance] for x in items],
                         columns=['id', 'accident1_id', 'accident2_id', 'distance'])
-    cache.set(cache_key, retval)
+    cache.set(cache_key, retval, timeout=0)
     refresh_timestamp = datetime.now() + relativedelta(days=1)
     refresh_timestamp = refresh_timestamp.replace(hour=1, minute=0, second=0, microsecond=0)
-    cache.set(refresh_timestamp_key, refresh_timestamp)
+    cache.set(refresh_timestamp_key, refresh_timestamp, timeout=0)
     return retval
 
 def is_data_valid(refresh_timestamp_key):
