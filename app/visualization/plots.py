@@ -27,7 +27,7 @@ def get_plot_avg_accidents_by_weekdays(start_datetime, end_datetime, output='jso
     data = data.map(lambda p: p.weekday()).value_counts().sort_index() / pd.Series(data.unique()).map(lambda p: p.weekday()).value_counts().sort_index()
     df = pd.DataFrame(dict(weekday=data.index, avg_count=data.values))
     
-    fig = px.bar(df, x='weekday', y='avg_count', labels={'avg_count':'Priemerný počet nehôd'}, hover_data={'weekday':False},)
+    fig = px.bar(df, x='weekday', y='avg_count', labels={'weekday':'Deň v týždni', 'avg_count':'Priemerný počet nehôd'},)
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -67,7 +67,7 @@ def get_plot_total_accidents_by_county(start_datetime, end_datetime, output='jso
         ),
         height=600,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd',
+            title_text = 'Celkový počet nehôd',
             gridcolor='rgb(140,140,140)',
             titlefont=dict(size=20),
         ),
@@ -96,7 +96,7 @@ def get_plot_total_accidents_by_district(start_datetime, end_datetime, output='j
         ),
         height=600,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd',
+            title_text = 'Celkový počet nehôd',
             gridcolor='rgb(140,140,140)',
             titlefont=dict(size=20),
         ),
@@ -127,7 +127,7 @@ def get_plot_total_accidents_by_city(start_datetime, end_datetime, output='json'
         ),
         height=700,
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd',
+            title_text = 'Celkový počet nehôd',
             gridcolor='rgb(140,140,140)',
             titlefont=dict(size=20),
         ),
@@ -146,7 +146,7 @@ def get_plot_accident_by_time_in_day(start_datetime, end_datetime, output='json'
     data = data * 100 / total_count
     df = pd.DataFrame(dict(hour=data.index, pct=data.values))
     
-    fig = px.bar(df, x='hour', y='pct', labels={'pct':'Percento nehôd'}, hover_data={'hour':False, 'pct':':.2f'},)
+    fig = px.bar(df, x='hour', y='pct', labels={'hour':'Hodina počas dňa', 'pct':'Percento nehôd'}, hover_data={'pct':':.2f'},)
     fig.update_layout(
         xaxis = dict(
             tickmode = 'array',
@@ -187,7 +187,7 @@ def get_plot_total_accidents_by_roads(start_datetime, end_datetime, max_records,
             type='category',
         ),
         yaxis = dict(
-            title_text = 'Absolútny počet nehôd',
+            title_text = 'Celkový počet nehôd',
             gridcolor='rgb(140,140,140)',
             titlefont=dict(size=20),
         ),

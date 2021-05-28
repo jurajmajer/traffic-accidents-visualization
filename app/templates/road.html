@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <h2 class="w3-panel" style="margin-top:45px;">Absolútny počet nehôd podľa cesty - TOP 50 (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
+    <h2 class="w3-panel" style="margin-top:45px;">Celkový počet nehôd podľa cesty - TOP 50 (<span id="plot1-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="plot1-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
     <div id="plot1" class="figure-general">
 		<script>
 		  var data = {{plot1}};
@@ -27,7 +27,7 @@
 		</script>
 	</div>
 	
-	<h2 class="w3-panel" style="margin-top:45px;">Zoznam všetkých ciest</h2>
+	<h2 class="w3-panel" style="margin-top:45px;">Bližšie info o jednotlivých cestách</h2>
 	{% for road in road_list %}
     	<h3 class="w3-panel" style="margin-top:25px;">{{road[0]}}:</h3>
         	<div class="w3-panel">
