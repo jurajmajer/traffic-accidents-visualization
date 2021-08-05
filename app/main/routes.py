@@ -143,14 +143,18 @@ def road():
 def road_detail(road_number):
     s, e = parse_datetimes()
     road = vu.get_road(road_number)
+    total_num_of_accidents = vu.get_total_accidents_for_road(road_number, s, e)
     tmpl = render_template('road_detail.html',
                            title='Prehľad dopravných nehôd pre cestu ' + road_number,
-                           page_title='Prehľad dopravných nehôd pre cestu ' + road_number + ' (' + str(round(road.shape_length/1000, 2)).replace('.',',') + ' km)',
+                           page_title='Prehľad dopravných nehôd pre cestu ' + road_number,
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
                            road_number = road_number,
                            frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e))
+                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e)),
+						   road_length=str(round(road.shape_length/1000, 2)).replace('.',','),
+                           total_num_of_accidents=total_num_of_accidents,
+                           accidents_ratio=str(round(total_num_of_accidents/round(road.shape_length/1000, 2), 2)).replace('.',',')
                            )
     return set_date_cookie(make_response(tmpl))
 
@@ -263,6 +267,11 @@ def get_map_county_frequent_accidents(county_id):
 def get_map_country_frequent_accidents():
     s, e = parse_datetimes()
     return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_country(MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json'))
+
+@app.route('/api/data/road/total_num_of_accidents/<road_number>')
+def get_data_road_total_num_of_accidents(road_number):
+    s, e = parse_datetimes()
+    return set_date_cookie(Response('{"total_num_of_accidents":' + str(vu.get_total_accidents_for_road(road_number, s, e)).replace('.',',') + '}', mimetype='application/json'))
 
 @app.route('/js/<path:path>')
 def send_js(path):

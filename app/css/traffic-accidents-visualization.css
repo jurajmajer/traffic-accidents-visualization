@@ -6,6 +6,19 @@
 
 .road-list-item { margin-top:8px; margin-right:5px; width:65px; }
 
+.road-statistics-panel {
+	font-size: 1.2em;
+	margin-top:45px;
+	width:50%;
+}
+
+.road-statistics-label {
+	text-transform:uppercase;
+	color:#009688;
+	margin-right:10px;
+	font-weight:bold;
+}
+
 @media screen and (max-width: 420px) { 
 	.date-picker-end-group { margin-left:0px; margin-top:20px; }
 }

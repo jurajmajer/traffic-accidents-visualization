@@ -7,12 +7,35 @@
 		{
 			refresh("/api/map/road_detail_map/{{road_number}}", "frequent_accidents_map")
 			refresh("/api/figure/accident_trend_on_road/{{road_number}}", "accident_trend_bar_plot")
+			refreshStatistics("/api/data/road/total_num_of_accidents/{{road_number}}")
 		}
+        
+        function refreshStatistics(url) {
+        	req = $.ajax({
+        		url : url,
+        		type : "GET",
+        		data: {s: $("#date-picker-start-id").val(), e: $("#date-picker-end-id").val()}
+        	});
+        
+        	req.done(function(data) {
+        		length = parseFloat($("#statistics-road-length").text().replace(",", "."))
+        		$("#statistics-total-num-of-accidents").text(data.total_num_of_accidents);
+        		ratio = data.total_num_of_accidents/length
+        		ratio = ratio.toFixed(2).toString().replace(".", ",")
+        		$("#statistics-accidents-ratio").text(ratio);
+        	});
+        }
 	
 	</script>
 {% endblock %}
 
 {% block content %}
+	<div class="w3-panel road-statistics-panel">
+		<div class="w3-third"><span class="road-statistics-label">dĺžka cesty {{road_number}}:</span><span id="statistics-road-length">{{road_length}}</span> km</div>
+		<div class="w3-third"><span class="road-statistics-label">celkový počet nehôd:</span><span id="statistics-total-num-of-accidents">{{total_num_of_accidents}}</span></div>
+		<div class="w3-third"><span class="road-statistics-label">počet nehôd na 1km:</span><span id="statistics-accidents-ratio">{{accidents_ratio}}</span></div>
+	</div>
+	
     <h2 class="w3-panel" style="margin-top:45px;">20 najnehodovejších úsekov na ceste {{road_number}} (<span id="frequent_accidents_map-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="frequent_accidents_map-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
     <p class="w3-panel">Do úvahy sa berie počet nehôd v okruhu 500 metrov.</p>
     <div id="frequent_accidents_map" class="figure-general" style="height:800px;">
