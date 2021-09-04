@@ -1,10 +1,12 @@
 {% extends "content_page.html" %}
 
 {% block head %}
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
 	<script>
         
-		function refreshAll()
-		{
+		function refreshAll() {
 			refresh("/api/map/road_detail_map/{{road_number}}", "frequent_accidents_map")
 			refresh("/api/figure/accident_trend_on_road/{{road_number}}", "accident_trend_bar_plot")
 			refreshStatistics("/api/data/road/total_num_of_accidents/{{road_number}}")
@@ -14,22 +16,57 @@
         	req = $.ajax({
         		url : url,
         		type : "GET",
-        		data: {s: $("#date-picker-start-id").val(), e: $("#date-picker-end-id").val()}
+        		data: {s: $("#date-picker-start-id").val(), e: $("#date-picker-end-id").val(),
+                	s_km: $("#slider-range").slider("values")[0], e_km: $("#slider-range").slider("values")[1]}
         	});
         
         	req.done(function(data) {
-        		length = parseFloat($("#statistics-road-length").text().replace(",", "."))
+        		//length = parseFloat($("#statistics-road-length").text().replace(",", "."))
+        		length = $("#slider-range").slider("values")[1]-$("#slider-range").slider("values")[0];
         		$("#statistics-total-num-of-accidents").text(data.total_num_of_accidents);
         		ratio = data.total_num_of_accidents/length
         		ratio = ratio.toFixed(2).toString().replace(".", ",")
         		$("#statistics-accidents-ratio").text(ratio);
+        		$("#statistics-road-length").text(length);
         	});
         }
 	
 	</script>
+	
+	<script>
+      function setSliderText(min, max) {
+          $("#slider-range").find(".ui-slider-handle").first().text(min);
+          $("#slider-range").find(".ui-slider-handle").last().text(max);
+      }
+      
+      $( function() {
+        $( "#slider-range" ).slider({
+          range: true,
+          min: 0,
+          max: Math.floor({{road_length}}),
+          values: [0, Math.floor({{road_length}})],
+          change: function(event, ui) {
+                setSliderText(ui.values[0], ui.values[1]);
+                refreshAll();
+            },
+            slide: function(event, ui) {
+                setSliderText(ui.values[0], ui.values[1]);
+            }
+        });
+        $( "#slider-range" ).css('background', '#dddddd');
+        $( "#slider-range .ui-slider-range" ).css('background', '#009688');
+        $( "#slider-range .ui-slider-handle" ).css({'background':'#009688','width':'40px','height':'27px','margin-top':'-0.2em','text-align':'center','font-weight':'bold'});
+        setSliderText(0, Math.floor({{road_length}}));
+      });
+    </script>
 {% endblock %}
 
-{% block content %}
+{% block content %}	
+	<p class="w3-panel" style="margin-top:20px;">
+    	Ak chcete zobraziť dáta iba pre časť cesty {{road_number}}, tu zvoľte začiatočný a koncový kilometer:
+    	<div class="w3-panel" style="margin-left:16px;margin-right:35px;height:12px;" id="slider-range"></div>
+	</p>
+	
 	<div class="w3-panel road-statistics-panel">
 		<div class="w3-third"><span class="road-statistics-label">dĺžka cesty {{road_number}}:</span><span id="statistics-road-length">{{road_length}}</span> km</div>
 		<div class="w3-third"><span class="road-statistics-label">celkový počet nehôd:</span><span id="statistics-total-num-of-accidents">{{total_num_of_accidents}}</span></div>

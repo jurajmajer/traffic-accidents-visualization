@@ -35,8 +35,9 @@ def get_districts_in_groups_by_county(num_in_one_group):
         retval.append([row['name'], get_districts_in_groups(i, 4)])
     return retval
 
-def get_total_accidents_for_road(road_number, start_datetime, end_datetime):
+def get_total_accidents_for_road(road_number, start_datetime, end_datetime, start_km=0, end_km=999999999):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
+    data = data.loc[(data.roadPosition >= start_km) & (data.roadPosition <= end_km)]
     data = data.loc[data.roadNumber == road_number]['overallStartTime']
     return len(data.index)
     

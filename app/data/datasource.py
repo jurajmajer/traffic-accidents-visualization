@@ -100,8 +100,8 @@ def get_traffic_accident():
         return cache.get(cache_key)
         
     items = m.TrafficAccident.query.all()
-    retval = pd.DataFrame(data=[[x.id, x.overallStartTime, x.sourceName, x.longitude, x.latitude, x.countyId, x.districtId, x.cityId, x.roadNumber] for x in items],
-                        columns=['id', 'overallStartTime', 'sourceName', 'longitude', 'latitude', 'countyId', 'districtId', 'cityId', 'roadNumber'])
+    retval = pd.DataFrame(data=[[x.id, x.overallStartTime, x.sourceName, x.longitude, x.latitude, x.countyId, x.districtId, x.cityId, x.roadNumber, x.roadPosition] for x in items],
+                        columns=['id', 'overallStartTime', 'sourceName', 'longitude', 'latitude', 'countyId', 'districtId', 'cityId', 'roadNumber', 'roadPosition'])
     cache.set(cache_key, retval, timeout=0)
     refresh_timestamp = datetime.now() + relativedelta(days=1)
     refresh_timestamp = refresh_timestamp.replace(hour=1, minute=0, second=0, microsecond=0)

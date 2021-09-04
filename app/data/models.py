@@ -40,6 +40,7 @@ class TrafficAccident(db.Model):
     districtId = db.Column(db.Integer, nullable=True)
     cityId = db.Column(db.Integer, nullable=True)
     roadNumber = db.Column(db.String(32), nullable=True)
+    roadPosition = db.Column(db.Float, nullable=True)
     
     def __repr__(self):
         return '<TrafficAccidents {}>'.format(self.overallStartTime)

@@ -25,10 +25,17 @@ const monthNames = ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "
 ];
 
 function refresh(url, plotId) {
+    s_km_val = -1;
+    e_km_val = -1;
+    if($('#slider-range').length) {
+        s_km_val = $("#slider-range").slider("values")[0];
+        e_km_val = $("#slider-range").slider("values")[1];
+    }
 	req = $.ajax({
 		url : url,
 		type : "GET",
-		data: {s: $("#date-picker-start-id").val(), e: $("#date-picker-end-id").val()}
+		data: {s: $("#date-picker-start-id").val(), e: $("#date-picker-end-id").val(),
+        	s_km: s_km_val, e_km: e_km_val}
 	});
 
 	req.done(function(data) {

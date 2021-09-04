@@ -248,9 +248,11 @@ def get_plot_accident_trend_in_district(district_id, start_datetime, end_datetim
     fig = get_plot_accident_trend(df)
     return encode_plot(fig, output)
 
-def get_plot_accident_trend_on_road(road_number, start_datetime, end_datetime, output='json'):
+def get_plot_accident_trend_on_road(road_number, start_datetime, end_datetime, start_km=0, end_km=999999999, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    data = data.loc[data.roadNumber == road_number]['overallStartTime']
+    data = data.loc[data.roadNumber == road_number]
+    data = data.loc[(data.roadPosition >= start_km) & (data.roadPosition <= end_km)]
+    data = data['overallStartTime']
     df = prepare_data_for_trend_plot(data, start_datetime, end_datetime)
     
     fig = get_plot_accident_trend(df)

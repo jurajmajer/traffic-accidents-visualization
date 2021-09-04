@@ -212,7 +212,8 @@ def get_json_plot_accident_trend_in_district(district_id):
 @app.route('/api/figure/accident_trend_on_road/<road_number>')
 def get_json_plot_accident_trend_on_road(road_number):
     s, e = parse_datetimes()
-    return set_date_cookie(Response(plots.get_plot_accident_trend_on_road(road_number, s, e, 'json'), mimetype='application/json'))
+    s_km, e_km = parse_interval_km()
+    return set_date_cookie(Response(plots.get_plot_accident_trend_on_road(road_number, s, e, s_km, e_km), mimetype='application/json'))
 
 @app.route('/api/figure/road/total_accident_by_road')
 def get_json_plot_total_accidents_by_road():
@@ -239,7 +240,8 @@ def get_map_county_detail(county_id):
 @app.route('/api/map/road_detail_map/<road_number>')
 def get_map_road_detail(road_number):
     s, e = parse_datetimes()
-    return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, 'json'), mimetype='application/json'))
+    s_km, e_km = parse_interval_km()
+    return set_date_cookie(Response(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e, s_km, e_km), mimetype='application/json'))
 
 @app.route('/api/map/choropleth_district')
 def get_map_choropleth_district():
@@ -271,7 +273,8 @@ def get_map_country_frequent_accidents():
 @app.route('/api/data/road/total_num_of_accidents/<road_number>')
 def get_data_road_total_num_of_accidents(road_number):
     s, e = parse_datetimes()
-    return set_date_cookie(Response('{"total_num_of_accidents":' + str(vu.get_total_accidents_for_road(road_number, s, e)).replace('.',',') + '}', mimetype='application/json'))
+    s_km, e_km = parse_interval_km()
+    return set_date_cookie(Response('{"total_num_of_accidents":' + str(vu.get_total_accidents_for_road(road_number, s, e, s_km, e_km)).replace('.',',') + '}', mimetype='application/json'))
 
 @app.route('/js/<path:path>')
 def send_js(path):
@@ -326,6 +329,15 @@ def parse_datetimes():
     if s is None:
         s = max(e.now() - relativedelta(days=365), u.get_min_date())
     return s, e
+
+def parse_interval_km():
+    s_km = 0
+    e_km = 999999999
+    if 's_km' in request.args:
+        s_km = int(request.args.get('s_km'))
+    if 'e_km' in request.args:
+        e_km = int(request.args.get('e_km'))
+    return s_km, e_km
 
 def get_datetime_from_string(string, round_up):
     try:

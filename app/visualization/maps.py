@@ -106,14 +106,16 @@ def get_map_with_most_frequent_accidents_for_country(max_number_accidents_return
     fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 6, center = {'lat':48.663863, 'lon':19.502998})
     return plots.encode_plot(fig, output)
 
-def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, output='json'):
+def get_map_with_most_frequent_accidents_for_road(road_number, max_number_accidents_returned, start_datetime, end_datetime, start_km=0, end_km=999999999, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
     data = data.loc[data.roadNumber == road_number]
+    data = data.loc[(data.roadPosition >= start_km) & (data.roadPosition <= end_km)]
     fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 8)
     if data.size > 0:
         shape = d.get_road_shape(road_number)
         if shape is not None:
             shape_list = parse_shape_string(shape)
+            shape_list = filter_shape(shape_list, start_km, end_km)
             for s in shape_list:
                 fig.add_trace(go.Scattermapbox(
                     mode = 'lines',
@@ -230,6 +232,29 @@ def parse_line_string(line_string):
         lat.append(float(parts[2*i]))
         lon.append(float(parts[2*i+1]))
     return [lat, lon]
+
+def filter_shape(shape, start_km, end_km):
+    if start_km == 0 and end_km >= 999999999:
+        return shape
+    retval = []
+    distance = 0
+    for line_string in shape:
+        ls_lat = []
+        ls_lon = []
+        for i in range(len(line_string[0])):
+            if i > 0:
+                distance += u.haversine(line_string[0][i-1], line_string[1][i-1], line_string[0][i], line_string[1][i])
+            if start_km <= distance and distance <= end_km:
+                ls_lat.append(line_string[0][i])
+                ls_lon.append(line_string[1][i])
+            if distance > end_km:
+                break
+        if len(ls_lat) > 1:
+            retval.append([ls_lat, ls_lon])
+        if distance > end_km:
+            break
+    return retval
+    
     
 #s = datetime.strptime('2021-01-06', '%Y-%m-%d')
 #s = s.replace(hour=0, minute=0, second=0, microsecond=0)
