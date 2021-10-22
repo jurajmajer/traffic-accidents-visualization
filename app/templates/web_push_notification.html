@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="/js/web-push/web-push.js"></script>
+    <script src="/js/autocomplete.js"></script>
+    <link rel="stylesheet" href="/css/autocomplete.css">
+{% endblock %}
+
+{% block content %}
+    <div class="w3-container" style="font-size:18px;">
+        <div id="error-msg-div" class="w3-panel w3-border-left w3-pale-red w3-border-red"><p id="error-msg"></p></div>
+        
+        <div id="notification-input-data">
+            
+            <p class="web-notification-label">Chcem dostávať notifikácie o nehodách v týchto lokalitách:</p>
+            <form autocomplete="off" action="javascript:void(0);">
+                <input type="radio" id="county" name="locality" value="county" class="web-notification-checkbox">
+                <label for="county">vybrať zoznam krajov SR</label>
+                <div id="county-select-div" class="autocomplete" style="width:300px; margin-left:25px;">
+                    <input id="county-select" type="text" name="county-select" placeholder="Kraj">
+                </div><br/>
+                <ul id="county-list"></ul>
+                <input type="radio" id="district" name="locality" value="district" class="web-notification-checkbox">
+                <label for="district">vybrať zoznam okresov SR</label>
+                <div id="district-select-div" class="autocomplete" style="width:300px; margin-left:25px;">
+                    <input id="district-select" type="text" name="district-select" placeholder="Okres">
+                </div><br/>
+                <ul id="district-list"></ul>
+                <input type="radio" id="road" name="locality" value="road" class="web-notification-checkbox">
+                <label for="road">vybrať zoznam ciest v SR</label><br/>
+            </form>
+            
+            <p class="web-notification-label">Zaujímajú ma nehody, ktoré sa udejú v týchto dňoch:</p>
+            <form action="javascript:void(0);">
+                <input type="checkbox" id="monday" name="monday" value="Monday" checked="true" class="web-notification-checkbox">
+                <label for="monday" class="web-notification-item">Pondelok</label>
+                <input type="checkbox" id="tuesday" name="tuesday" value="Tuesday" checked="true" class="web-notification-checkbox">
+                <label for="tuesday" class="web-notification-item">Utorok</label>
+                <input type="checkbox" id="wednesday" name="wednesday" value="Wednesday" checked="true" class="web-notification-checkbox">
+                <label for="wednesday" class="web-notification-item">Streda</label>
+                <input type="checkbox" id="thursday" name="thursday" value="Thursday" checked="true" class="web-notification-checkbox">
+                <label for="thursday" class="web-notification-item">Štvrtok</label>
+                <input type="checkbox" id="friday" name="friday" value="Friday" checked="true" class="web-notification-checkbox">
+                <label for="friday" class="web-notification-item">Piatok</label>
+                <input type="checkbox" id="saturday" name="saturday" value="Saturday" checked="true" class="web-notification-checkbox">
+                <label for="saturday" class="web-notification-item">Sobota</label>
+                <input type="checkbox" id="sunday" name="sunday" value="Sunday" checked="true" class="web-notification-checkbox">
+                <label for="sunday">Nedeľa</label>
+            </form>
+                
+            <p class="web-notification-label">Zaujímajú ma nehody, ktoré sa udejú v tomto čase:</p>
+            <form action="javascript:void(0);">
+                <label for="from_time">Od:</label>
+                <input type="time" id="from_time" name="from_time" value="00:00" class="web-notification-item">
+                <label for="to_time">Do:</label>
+                <input type="time" id="to_time" name="to_time" value="23:59">
+            </form>
+            
+        </div>
+        
+        <div id="msg-div" class="w3-panel w3-border-left w3-pale-green w3-border-green"><p id="msg">V tomto webovom prehliadači ste zaregistrovaný na odber notifikácií</p></div>
+    
+        <div>
+            <button class="web-notification-push-btn">Zaregistrovať notifikácie</button>
+        </div>
+    </div>
+{% endblock %}

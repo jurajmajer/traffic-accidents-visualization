@@ -18,6 +18,7 @@ from dateutil.relativedelta import relativedelta
 from flask import g
 from timeit import default_timer as t
 from app.main import utils as u
+from app.notifications import webpush as webpush
 import locale
 
 locale.setlocale(locale.LC_ALL, 'sk_SK.utf8')
@@ -166,6 +167,14 @@ def about():
                            **get_general_kwargs('about'),
                            )
     return make_response(tmpl)
+
+@app.route('/web-push-notification')
+def web_push_notification():
+    tmpl = render_template('web_push_notification.html', 
+                           title='Notifikácie o dopravných nehodách',
+                           page_title='Notifikácie o dopravných nehodách'
+                           )
+    return make_response(tmpl)
     
 @app.route('/api/figure/total_accident_trend')
 def get_json_plot_total_accidents_by_days():
@@ -275,6 +284,20 @@ def get_data_road_total_num_of_accidents(road_number):
     s, e = parse_datetimes()
     s_km, e_km = parse_interval_km()
     return set_date_cookie(Response('{"total_num_of_accidents":' + str(vu.get_total_accidents_for_road(road_number, s, e, s_km, e_km)).replace('.',',') + '}', mimetype='application/json'))
+
+@app.route('/api/web-push/save-subscription', methods=["POST"])
+def web_push_save_subscription():
+    webpush.save_subscription(request.data)
+    return Response(status=201, mimetype="application/json")
+
+@app.route('/api/web-push/remove-subscription', methods=["POST"])
+def web_push_remove_subscription():
+    webpush.remove_subscription(request.data)
+    return Response(status=201, mimetype="application/json")
+
+@app.route('/sw.js')
+def send_sw_js():
+    return send_from_directory('js/web-push', 'sw.js')
 
 @app.route('/js/<path:path>')
 def send_js(path):
