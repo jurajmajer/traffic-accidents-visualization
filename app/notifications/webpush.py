@@ -16,7 +16,7 @@ def save_subscription(data):
     
     item = m.WebPushNotification(
             token_id=parsed_data['token']['endpoint'], 
-            token=parsed_data['token'],
+            token=json.dumps(parsed_data['token']),
             monday=parsed_data['weekdays'][0],
             tuesday=parsed_data['weekdays'][1],
             wednesday=parsed_data['weekdays'][2],
