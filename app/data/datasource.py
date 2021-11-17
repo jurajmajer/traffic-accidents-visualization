@@ -22,6 +22,12 @@ def get_traffic_accident_by_date(start_date=None, end_date=None):
         retval= retval[retval['overallStartTime'] < end_date]
     return retval
 
+def get_traffic_accident_detail(idx):
+    try:
+        return m.TrafficAccidentDetail.query.filter(m.TrafficAccidentDetail.id == idx).one()
+    except:
+        return None
+
 @cache.cached(timeout=43200, key_prefix='get_district')
 def get_district():
     items = m.District.query.all()

@@ -12,7 +12,7 @@ from app.visualization import viz_utils as vu
 from flask import render_template
 from flask import Markup
 from flask import Response
-from flask import request, send_from_directory, make_response
+from flask import request, send_from_directory, make_response, redirect
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import g
@@ -159,6 +159,26 @@ def road_detail(road_number):
                            )
     return set_date_cookie(make_response(tmpl))
 
+@app.route('/accident_detail/<accident_id>')
+def accident_detail(accident_id):
+    accident_id = int(accident_id)
+    accident = vu.get_traffic_accident_detail(accident_id)
+    if accident is None:
+        return redirect("/", code=302)
+    tmpl = render_template('accident_detail.html',
+                           title='Detail dopravnej nehody',
+                           page_title='Detail dopravnej nehody',
+                           **get_general_kwargs(None),
+                           start_time = accident.overallStartTime.strftime('%d.%m.%Y %H:%M'),
+                           place = accident.textLocation,
+                           city = vu.get_city_name(accident.cityId),
+                           district = vu.get_district_name(accident.districtId),
+                           county = vu.get_county_name(accident.countyId),
+                           gps = str(accident.latitude) + ', ' + str(accident.longitude),
+                           accident_detail_map = Markup(maps.get_map_accident_detail(accident.latitude, accident.longitude, accident.overallStartTime.strftime('%d.%m.%Y %H:%M')))
+                           )
+    return make_response(tmpl)
+
 @app.route('/about')
 def about():
     tmpl = render_template('about.html',
@@ -233,18 +253,6 @@ def get_json_plot_total_accidents_by_road():
 def get_json_plot_total_accidents_ratio_by_road():
     s, e = parse_datetimes()
     return set_date_cookie(Response(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json'), mimetype='application/json'))
-
-@app.route('/api/map/district_detail_map/<district_id>')
-def get_map_district_detail(district_id):
-    district_id = int(district_id)
-    s, e = parse_datetimes()
-    return set_date_cookie(Response(maps.get_district_detail_map(district_id, s, e, 'json'), mimetype='application/json'))
-
-@app.route('/api/map/county_detail_map/<county_id>')
-def get_map_county_detail(county_id):
-    county_id = int(county_id)
-    s, e = parse_datetimes()
-    return set_date_cookie(Response(maps.get_county_detail_map(county_id, s, e, 'json'), mimetype='application/json'))
 
 @app.route('/api/map/road_detail_map/<road_number>')
 def get_map_road_detail(road_number):

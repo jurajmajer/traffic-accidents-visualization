@@ -17,15 +17,6 @@ from app.main import utils as u
 from timeit import default_timer as tim
 import plotly.graph_objects as go
 
-def get_district_detail_map(district_id, start_datetime, end_datetime, output='json'):
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    data = data[data['districtId']==district_id]
-    data['marker_size'] = 10
-    center_lat = (data['latitude'].min() + data['latitude'].max()) / 2
-    center_lon = (data['longitude'].min() + data['longitude'].max()) / 2
-    
-    return get_accident_scatter_map(data, output, 10, {'lat':center_lat, 'lon':center_lon})
-
 def get_district_choropleth(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['districtId']
     district_names = d.get_district()
@@ -55,15 +46,6 @@ def get_district_choropleth(start_datetime, end_datetime, output='json'):
             coloraxis_showscale=False,
     )
     return plots.encode_plot(fig, output)
-
-def get_county_detail_map(county_id, start_datetime, end_datetime, output='json'):
-    data = d.get_traffic_accident_by_date(start_datetime, end_datetime)
-    data = data[data['countyId']==county_id]
-    data['marker_size'] = 10
-    center_lat = (data['latitude'].min() + data['latitude'].max()) / 2
-    center_lon = (data['longitude'].min() + data['longitude'].max()) / 2
-    
-    return get_accident_scatter_map(data, output, 9, {'lat':center_lat, 'lon':center_lon})
 
 def get_county_choropleth(start_datetime, end_datetime, output='json'):
     data = d.get_traffic_accident_by_date(start_datetime, end_datetime)['countyId']
@@ -138,6 +120,11 @@ def get_map_with_most_frequent_accidents_for_district(district_id, max_number_ac
     fig = get_map_with_most_frequent_accidents(max_number_accidents_returned, data, 9.5)
     return plots.encode_plot(fig, output)
 
+def get_map_accident_detail(latitude, longitude, hover_text, output='json'):
+    data = pd.DataFrame(columns=['latitude', 'longitude', 'marker_size'])
+    data.loc[0] = [latitude, longitude, 50]
+    return get_accident_scatter_map(data, output, 14, {'lat':latitude, 'lon':longitude})
+
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, center=None):
     data=filter_nearby_accidents(data)
     if data is None:
@@ -201,10 +188,12 @@ def filter_nearby_accidents(data):
     data['marker_size'] = data.apply(lambda x: sum_values(a, b, x['id']), axis=1)
     return data.sort_values(by='marker_size', ascending=False)
     
-def get_accident_scatter_map(data, output, zoom, center):
+def get_accident_scatter_map(data, output, zoom, center, size_max = None):
+    if size_max is None:
+        size_max = 50
     fig = px.scatter_mapbox(data, lat='latitude', lon='longitude',
-                  mapbox_style="open-street-map", size='marker_size', size_max=10, opacity=0.8, hover_name='overallStartTime',
-                  hover_data=['overallStartTime'], zoom=zoom)
+                  mapbox_style="open-street-map", size='marker_size', size_max=size_max, opacity=0.8,
+                  hover_data={'latitude':False, 'longitude':False, 'marker_size':False}, zoom=zoom, center = center)
     fig.update_layout(
             margin={"r":0,"t":0,"l":0,"b":0},
             paper_bgcolor='rgba(0,0,0,0)',

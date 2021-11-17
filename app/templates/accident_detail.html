@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+	<div class="w3-panel accident-detail-panel">
+		<div><span class="accident-detail-label">Čas vzniku nehody:</span><span>{{start_time}}</span></div>
+		<div><span class="accident-detail-label">Miesto nehody:</span><span>{{place}}</span></div>
+		<div><span class="accident-detail-label">Obec:</span><span>{{city}}</span></div>
+		<div><span class="accident-detail-label">Okres:</span><span>{{district}}</span></div>
+		<div><span class="accident-detail-label">Kraj:</span><span>{{county}}</span></div>
+		<div><span class="accident-detail-label">GPS:</span><span>{{gps}}</span></div>
+	</div>
+	
+    <div id="accident_detail_map" class="figure-general" style="height:800px;">
+		<script>
+		  var graphs = {{accident_detail_map}};
+		  Plotly.plot('accident_detail_map', graphs, {});
+		</script>
+	</div>
+{% endblock %}

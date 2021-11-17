@@ -48,6 +48,19 @@ span.web-notification-list-item {
     padding: 12px 16px;
 }
 
+.accident-detail-panel {
+	font-size: 1.2em;
+	margin-top:10px;
+	margin-bottom:25px;
+}
+
+.accident-detail-label {
+	text-transform:uppercase;
+	color:#009688;
+	margin-right:10px;
+	font-weight:bold;
+}
+
 
 @media screen and (max-width: 420px) { 
 	.date-picker-end-group { margin-left:0px; margin-top:20px; }

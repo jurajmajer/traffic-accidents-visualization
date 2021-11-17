@@ -45,6 +45,14 @@ class TrafficAccident(db.Model):
     def __repr__(self):
         return '<TrafficAccidents {}>'.format(self.overallStartTime)
     
+class TrafficAccidentDetail(TrafficAccident):
+
+    description = db.Column(db.String(512), nullable=True)
+    textLocation = db.Column(db.String(256), nullable=True)
+    
+    def __repr__(self):
+        return '<TrafficAccidentDetail {}>'.format(self.overallStartTime)
+    
 class NearbyAccident(db.Model):
     __tablename__ = 'nearbyaccidents'
     

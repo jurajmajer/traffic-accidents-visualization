@@ -16,6 +16,10 @@ def get_county_name(county_id):
     names = d.get_county()
     return names.loc[county_id]['name']
 
+def get_city_name(city_id):
+    names = d.get_city()
+    return names.loc[city_id]['name']
+
 def get_county_id_for_district(district_id):
     return int(district_id / 100)
     
@@ -90,4 +94,7 @@ def get_road(road_number):
     retval = retval.loc[retval.direction == 1]
     retval = retval.loc[retval.number == road_number]
     return retval.iloc[0]
+
+def get_traffic_accident_detail(idx):
+    return d.get_traffic_accident_detail(idx)
     
