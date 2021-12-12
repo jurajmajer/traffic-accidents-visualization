@@ -18,7 +18,9 @@ def get_county_name(county_id):
 
 def get_city_name(city_id):
     names = d.get_city()
-    return names.loc[city_id]['name']
+    if city_id in names.index:
+        return names.loc[city_id]['name']
+    return ""
 
 def get_county_id_for_district(district_id):
     return int(district_id / 100)
