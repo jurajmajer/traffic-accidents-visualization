@@ -47,6 +47,8 @@ li.web-notification-list-item {
     border: 2px solid black;
     padding: 10px;
     border-radius: 20px;
+    margin-right: 15px;
+    margin-bottom: 10px;
 }
 
 i.web-notification-list-item {

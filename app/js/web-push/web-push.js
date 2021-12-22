@@ -194,7 +194,7 @@ function addItemToList(ulId, elWithValue, possibleValues) {
     var text = elWithValue.val()
     if (!possibleValues.includes(text))
         return;
-    if($("#"+ulId+" > li").text().indexOf(text + "x") !== -1)
+    if($("#"+ulId+" > li").text().indexOf(text) !== -1)
         return;
     $("#"+ulId).append("<li class='web-notification-list-item'><span class='web-notification-list-item-value'>"+text+"</span><i class='fa fa-close web-notification-list-item' onclick='removeItemFromList(this)'></i></li>");
     text = elWithValue.val("")
