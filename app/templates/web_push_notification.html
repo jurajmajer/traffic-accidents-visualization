@@ -12,48 +12,50 @@
         
         <div id="notification-input-data">
             
-            <p class="web-notification-label">Chcem dostávať notifikácie o nehodách v týchto lokalitách:</p>
+            <p>Na tejto stránke sa môžete zaregistrovať na odber notifikácií o dopravných nehodách. Notifikácie vám budú zasielané pomocou <a href="https://developer.mozilla.org/en-US/docs/Web/API/Push_API">Push API</a> v reálnom čase.
+            Pri registrácii treba odpovedať na niekoľko otázok, aby sme vedeli, ktoré nehody sú pre vás zaujímavé. V budúcnosti sa môžete z odberu odregistrovať na tejto istej stránke. Ak máte záujem o registráciu, pokračujte nižšie: 
+            </p>
+            
+            <p class="web-notification-label">1. Zaujímajú ma nehody v týchto lokalitách:</p>
             <form autocomplete="off" action="javascript:void(0);">
-                <input type="radio" id="county" name="locality" value="county" class="web-notification-checkbox">
-                <label for="county">vybrať zoznam krajov SR</label>
-                <div id="county-select-div" class="autocomplete" style="width:300px; margin-left:25px;">
+                <input type="radio" id="county" name="locality" value="county">
+                <label for="county">vybrať zoznam krajov</label><br/>
+                <div id="county-select-div" class="autocomplete" style="width:300px;">
                     <input id="county-select" type="text" name="county-select" placeholder="Kraj">
-                </div><br/>
-                <ul id="county-list"></ul>
-                <input type="radio" id="district" name="locality" value="district" class="web-notification-checkbox">
-                <label for="district">vybrať zoznam okresov SR</label>
-                <div id="district-select-div" class="autocomplete" style="width:300px; margin-left:25px;">
+                </div>
+                <ul id="county-list" style="padding-inline-start: 0px;"></ul>
+                <input type="radio" id="district" name="locality" value="district">
+                <label for="district">vybrať zoznam okresov</label><br/>
+                <div id="district-select-div" class="autocomplete" style="width:300px;">
                     <input id="district-select" type="text" name="district-select" placeholder="Okres">
                 </div><br/>
-                <ul id="district-list"></ul>
-                <input type="radio" id="road" name="locality" value="road" class="web-notification-checkbox">
-                <label for="road">vybrať zoznam ciest v SR</label><br/>
+                <ul id="district-list" style="padding-inline-start: 0px;"></ul>
             </form>
             
-            <p class="web-notification-label">Zaujímajú ma nehody, ktoré sa udejú v týchto dňoch:</p>
+            <p class="web-notification-label">2. Zaujímajú ma nehody, ktoré sa udejú v týchto dňoch:</p>
             <form action="javascript:void(0);">
                 <input type="checkbox" id="monday" name="monday" value="Monday" checked="true" class="web-notification-checkbox">
                 <label for="monday" class="web-notification-item">Pondelok</label>
                 <input type="checkbox" id="tuesday" name="tuesday" value="Tuesday" checked="true" class="web-notification-checkbox">
-                <label for="tuesday" class="web-notification-item">Utorok</label>
+                <label for="tuesday" class="web-notification-item">Utorok</label><br/>
                 <input type="checkbox" id="wednesday" name="wednesday" value="Wednesday" checked="true" class="web-notification-checkbox">
                 <label for="wednesday" class="web-notification-item">Streda</label>
                 <input type="checkbox" id="thursday" name="thursday" value="Thursday" checked="true" class="web-notification-checkbox">
-                <label for="thursday" class="web-notification-item">Štvrtok</label>
+                <label for="thursday" class="web-notification-item">Štvrtok</label><br/>
                 <input type="checkbox" id="friday" name="friday" value="Friday" checked="true" class="web-notification-checkbox">
                 <label for="friday" class="web-notification-item">Piatok</label>
                 <input type="checkbox" id="saturday" name="saturday" value="Saturday" checked="true" class="web-notification-checkbox">
-                <label for="saturday" class="web-notification-item">Sobota</label>
+                <label for="saturday" class="web-notification-item">Sobota</label><br/>
                 <input type="checkbox" id="sunday" name="sunday" value="Sunday" checked="true" class="web-notification-checkbox">
                 <label for="sunday">Nedeľa</label>
             </form>
                 
-            <p class="web-notification-label">Zaujímajú ma nehody, ktoré sa udejú v tomto čase:</p>
+            <p class="web-notification-label">3. Zaujímajú ma nehody, ktoré sa udejú v tomto čase:</p>
             <form action="javascript:void(0);">
                 <label for="from_time">Od:</label>
-                <input type="time" id="from_time" name="from_time" value="00:00" class="web-notification-item">
+                <input type="time" id="from_time" name="from_time" value="00:00" /><br/>
                 <label for="to_time">Do:</label>
-                <input type="time" id="to_time" name="to_time" value="23:59">
+                <input type="time" id="to_time" name="to_time" value="23:59" style="margin-top:30px;" />
             </form>
             
         </div>

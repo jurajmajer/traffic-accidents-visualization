@@ -32,6 +32,8 @@ function updateSubscriptionOnServer(url, data) {
 }
 
 function subscribeUser() {
+    if(!validateSubscribeData())
+        return
 	window.Notification.requestPermission().then(function (permission) {
 		// TODO: Provide feedback in case permission is not granted; this can happen if the user revoked the permission
 		// after having subscribed once, and in that case, the only way to regrant permission in e.g. Firefox and
@@ -43,17 +45,43 @@ function subscribeUser() {
 			var options = { applicationServerKey: applicationServerKey, userVisibleOnly: true }
 			navigator.serviceWorker.ready.then(function(reg) {
 				reg.pushManager.subscribe(options).then(function(subscription) {
-    				setButtonText()
+    				isSubscribed = !isSubscribed
+					setButtonText()
 					updateSubscriptionOnServer('/api/web-push/save-subscription', getSubscribeData(subscription))
 				}).catch(function(e) {
 					displayError("Nastala chyba pri registrovaní notifikácií: " + e)
+					return
 				})
 			})
 		} else {
     		displayError("Nepodarilo sa získať oprávnenie vo vašom prehliadači na zasielanie notifikácií. Skúste manuálne povoliť notifikácie pre našu doménu v nastaveniach vášho prehliadača.")
-			pushButton.disabled = true;
+			return
 		}
 	})
+}
+
+function validateSubscribeData() {
+    if(getCountyList().length == 0 && getDistrictList().length == 0)
+    {
+        displayError("Nie je možné sa zaregistrovať, pretože ste nevybrali žiaden kraj ani okres (otázka č.1)");
+        return false;
+    }
+    if(!$("#monday").is(':checked') && !$("#tuesday").is(':checked') && !$("#wednesday").is(':checked') && !$("#thursday").is(':checked') && 
+        !$("#friday").is(':checked') && !$("#saturday").is(':checked') && !$("#sunday").is(':checked')) {
+        displayError("Nie je možné sa zaregistrovať, pretože ste nevybrali žiaden deň v týždni (otázka č.2)");
+        return false;
+    }
+    if(parseInt($("#from_time").val().substring(0, 2)) > parseInt($("#to_time").val().substring(0, 2))) {
+        displayError("Nie je možné sa zaregistrovať, pretože ste vybrali nesprávny čas (otázka č.3). Čas 'Od' je neskôr ako 'Do'.");
+        return false;
+    }
+    if(parseInt($("#from_time").val().substring(0, 2)) == parseInt($("#to_time").val().substring(0, 2)) &&
+        parseInt($("#from_time").val().substring(3, 5)) > parseInt($("#to_time").val().substring(3, 5))) {
+        displayError("Nie je možné sa zaregistrovať, pretože ste vybrali nesprávny čas (otázka č.3). Čas 'Od' je neskôr ako 'Do'.");
+        return false;
+    }
+    displayError("");
+    return true;
 }
 
 function getSubscribeData(subscription) {
@@ -96,6 +124,7 @@ function unsubscribeUser() {
 		reg.pushManager.getSubscription().then(function(subscription) {
 			if (subscription) {
 				subscription.unsubscribe().then(function(successful) {
+    				isSubscribed = !isSubscribed
     				setButtonText()
 					updateSubscriptionOnServer('/api/web-push/remove-subscription', getUnsubscribeData(subscription))
 				}).catch(function(e) {
@@ -127,8 +156,7 @@ function setButtonText() {
 
 function initializeUI(swRegistration) {
 	pushButton.addEventListener('click', function() {
-		isSubscribed = !isSubscribed
-		if (isSubscribed) {
+		if (!isSubscribed) {
 			subscribeUser()
 		} else {
 			unsubscribeUser()
@@ -168,7 +196,7 @@ function addItemToList(ulId, elWithValue, possibleValues) {
         return;
     if($("#"+ulId+" > li").text().indexOf(text + "x") !== -1)
         return;
-    $("#"+ulId).append("<li class='web-notification-list-item'><span class='web-notification-list-item-value'>"+text+"</span><span class='web-notification-list-item' onclick='removeItemFromList(this)'>x</span></li>");
+    $("#"+ulId).append("<li class='web-notification-list-item'><span class='web-notification-list-item-value'>"+text+"</span><i class='fa fa-close web-notification-list-item' onclick='removeItemFromList(this)'></i></li>");
     text = elWithValue.val("")
 }
 
@@ -185,7 +213,11 @@ function hideLocalityItems() {
 
 function displayError(errorMsg) {
     $("#error-msg").text(errorMsg)
-    $("#error-msg-div").show()
+    if(errorMsg.length > 0) {
+        $("#error-msg-div").show()
+    } else {
+        $("#error-msg-div").hide()
+    }
 }
 
 $(document).ready(function(){

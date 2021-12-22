@@ -192,7 +192,8 @@ def about():
 def web_push_notification():
     tmpl = render_template('web_push_notification.html', 
                            title='Notifikácie o dopravných nehodách',
-                           page_title='Notifikácie o dopravných nehodách'
+                           page_title='Notifikácie o dopravných nehodách',
+                           **get_general_kwargs('notifications'),
                            )
     return make_response(tmpl)
     
