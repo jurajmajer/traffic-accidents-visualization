@@ -331,6 +331,12 @@ def encode_plot(fig, output=None):
     fig.show(renderer="browser")
     
 def get_empty_plot():
+    return get_simple_plot_with_text("V danom čase sa nestala žiadna nehoda")
+
+def get_loading_plot():
+    return encode_plot(get_simple_plot_with_text("Načítavam údaje..."), 'json')
+
+def get_simple_plot_with_text(heading):
     fig = go.Figure()
     fig.update_layout(
         xaxis = dict(
@@ -344,7 +350,7 @@ def get_empty_plot():
         plot_bgcolor='rgba(0,0,0,0)',
     )
     fig.add_annotation(
-        text="V danom čase sa nestala žiadna nehoda",
+        text=heading,
         showarrow=False,
         xref='paper',
         yref='paper',

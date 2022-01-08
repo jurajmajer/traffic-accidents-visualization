@@ -41,8 +41,6 @@ def index():
     tmpl = render_template('index.html', 
                            title='Štatistika dopravných nehôd v Slovenskej republike',
                            page_title='Štatistika dopravných nehôd v Slovenskej republike', 
-                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_country(MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_total_accident_trend(s, e, 'json')), 
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('home')
                            )
@@ -54,9 +52,6 @@ def stats():
     tmpl = render_template('stats.html', 
                            title='Ostatné štatistiky',
                            page_title='Ostatné štatistiky',                           
-                           plot1=Markup(plots.get_plot_avg_accidents_by_weekdays(s, e, 'json')), 
-                           plot2=Markup(plots.get_plot_accident_by_time_in_day(s, e, 'json')),
-                           plot3=Markup(plots.get_plot_total_accidents_by_city(s, e, 'json')),
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('stats')
                            )
@@ -68,8 +63,6 @@ def district():
     tmpl = render_template('district.html',
                            title='Prehľad dopravných nehôd podľa okresov',
                            page_title='Prehľad dopravných nehôd podľa okresov',
-                           choropleth_map=Markup(maps.get_district_choropleth(s, e)),
-                           total_accidents_by_district_plot=Markup(plots.get_plot_total_accidents_by_district(s, e, 'json')),
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('district'),
                            district_groups=vu.get_districts_in_groups_by_county(4)
@@ -88,8 +81,6 @@ def district_detail(district_id):
                            page_title='Prehľad dopravných nehôd v okrese ' + district_name,
                            district_name = district_name,
                            district_id = district_id,
-                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_district(district_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_district(district_id, s, e)),
                            district_groups=vu.get_districts_in_groups(vu.get_county_id_for_district(district_id), 4)
                            )
     return set_date_cookie(make_response(tmpl))
@@ -102,8 +93,6 @@ def county():
                            page_title='Prehľad dopravných nehôd podľa krajov',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('county'),
-                           choropleth_map=Markup(maps.get_county_choropleth(s, e)),
-                           total_accidents_by_county_plot=Markup(plots.get_plot_total_accidents_by_county(s, e, 'json')),
                            county_groups=vu.get_counties_in_groups(4)
                            )
     return set_date_cookie(make_response(tmpl))
@@ -120,8 +109,6 @@ def county_detail(county_id):
                            page_title='Prehľad dopravných nehôd pre ' + county_name,
                            county_name = county_name,
                            county_id = county_id,
-                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_county(county_id, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_in_county(county_id, s, e)),
                            district_groups=vu.get_districts_in_groups(county_id, 4)
                            )
     return set_date_cookie(make_response(tmpl))
@@ -134,8 +121,6 @@ def road():
                            page_title='Prehľad dopravných nehôd podľa ciest',
                            **get_date_kwargs(s, e),
                            **get_general_kwargs('road'),
-                           plot1=Markup(plots.get_plot_total_accidents_by_roads(s, e, 50, 'json')),
-                           plot2=Markup(plots.get_plot_total_accidents_ratio_by_roads(s, e, 50, 'json')),
                            road_list=vu.get_all_roads_list()
                            )
     return set_date_cookie(make_response(tmpl))
@@ -151,9 +136,7 @@ def road_detail(road_number):
                            **get_date_kwargs(s, e),
                            **get_general_kwargs(None),
                            road_number = road_number,
-                           frequent_accidents_map=Markup(maps.get_map_with_most_frequent_accidents_for_road(road_number, MAX_NUMBER_OF_MOST_FREQUEST_ACCIDENTS, s, e)),
-                           accident_trend_bar_plot=Markup(plots.get_plot_accident_trend_on_road(road_number, s, e)),
-						   road_length=str(round(road.shape_length/1000, 2)).replace('.',','),
+                           road_length=str(round(road.shape_length/1000, 2)).replace('.',','),
                            total_num_of_accidents=total_num_of_accidents,
                            accidents_ratio=str(round(total_num_of_accidents/round(road.shape_length/1000, 2), 2)).replace('.',',')
                            )
@@ -337,7 +320,8 @@ def get_date_kwargs(s, e):
                 'min_date':u.get_min_date().strftime("%Y-%m-%d"),
                 'max_date':u.get_max_date().strftime("%Y-%m-%d"),
                 'start_date':s,
-                'end_date':e
+                'end_date':e,
+                'loading_graph_data':Markup(plots.get_loading_plot())
               }
     return retval
 

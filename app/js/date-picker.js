@@ -25,6 +25,7 @@ const monthNames = ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "
 ];
 
 function refresh(url, plotId) {
+    Plotly.react(plotId, loading_graph_data, {});
     s_km_val = -1;
     e_km_val = -1;
     if($('#slider-range').length) {

@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
+{% block head %}
+    {% block head_content %}{% endblock %}
+	<script>
+		var loading_graph_data = {{loading_graph_data}};
+		$(function() {
+            refreshAll();
+        });
+	</script>
+{% endblock %}
+
 {% block date_picker %}
     <div class="w3-bar-item date-picker-main" style="font-size: 17px;">
       <form id="form1" action="#">

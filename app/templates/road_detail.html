@@ -1,6 +1,6 @@
 {% extends "content_page.html" %}
 
-{% block head %}
+{% block head_content %}
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     
@@ -77,16 +77,14 @@
     <p class="w3-panel">Do úvahy sa berie počet nehôd v okruhu 500 metrov.</p>
     <div id="frequent_accidents_map" class="figure-general" style="height:800px;">
 		<script>
-		  var data = {{frequent_accidents_map}};
-		  Plotly.plot('frequent_accidents_map', data, {});
+		  Plotly.plot('frequent_accidents_map', loading_graph_data, {});
 		</script>
 	</div>
 	
 	<h2 class="w3-panel" style="margin-top:45px;">Počet dopravných nehôd za deň na ceste {{road_number}} (<span id="accident_trend_bar_plot-start-date-label">{{start_date.strftime("%d %b %Y")}}</span> - <span id="accident_trend_bar_plot-end-date-label">{{end_date.strftime("%d %b %Y")}}</span>)</h2>
 	<div id="accident_trend_bar_plot" class="figure-general">
 		<script>
-		  var graphs = {{accident_trend_bar_plot}};
-		  Plotly.plot('accident_trend_bar_plot', graphs, {});
+		  Plotly.plot('accident_trend_bar_plot', loading_graph_data, {});
 		</script>
 	</div>
 {% endblock %}
