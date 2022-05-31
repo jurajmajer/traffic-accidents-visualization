@@ -128,7 +128,8 @@ def get_map_accident_detail(latitude, longitude, hover_text, output='json'):
 def get_map_with_most_frequent_accidents(max_number_accidents_returned, data, zoom, center=None):
     data=filter_nearby_accidents(data)
     if data is None:
-        return plots.get_empty_plot()
+        # return plots.get_empty_plot()
+        return plots.get_simple_plot_with_text("Nie je k dispozícii")
     temp = []
     retval = []
     for i, row in data.iterrows():
@@ -176,6 +177,7 @@ def sum_values(a, b, idx):
     return retval
 
 def filter_nearby_accidents(data):
+    return None
     if len(data.index) == 0:
         return None
     retval = d.get_nearby_accident()
